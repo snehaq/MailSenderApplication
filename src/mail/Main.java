@@ -24,16 +24,19 @@ import utility.ReadPropertiesFile;
 public class Main {
 
 	public static void getEmpWithBday(List EmpWithBirthDaysList,
-			List AllEmails, HttpServletRequest request,HttpServletResponse response) throws BiffException,
-			IOException, ClassNotFoundException, SQLException {
+			List AllEmails, HttpServletRequest request,
+			HttpServletResponse response) throws BiffException, IOException,
+			ClassNotFoundException, SQLException {
 		List columnNames = new ArrayList();
 
-		columnNames = GenericUtility.getColumnNames(columnNames);
+		columnNames = GenericUtility.getColumnNames(columnNames, request,
+				response);
 
 		EmpWithBirthDaysList = GenericUtility.getEmployeesWithBirthdayToday(
 				columnNames, EmpWithBirthDaysList, request, response);
 
-		AllEmails = GenericUtility.getAllEmpEmails(AllEmails);
+		AllEmails = GenericUtility
+				.getAllEmpEmails(AllEmails, request, response);
 
 	}
 
@@ -97,20 +100,19 @@ public class Main {
 		String content = "";
 		BufferedReader in = null;
 		String folderName = "/templates";
-		
+
 		StringBuilder contentBuilder = new StringBuilder();
-		
-	
+
 		String absolutePath = request.getSession().getServletContext()
 				.getRealPath(folderName);
 		String folderPath = absolutePath + "/";
-		
+
 		if (templates.length == 1) {
 			try {
-				in = new BufferedReader(new FileReader(folderPath + templates[0]
-						+ ".html"));
+				in = new BufferedReader(new FileReader(folderPath
+						+ templates[0] + ".html"));
 			} catch (FileNotFoundException e) {
-			System.out.println("in first catch");
+				System.out.println("in first catch");
 				e.printStackTrace();
 			}
 		} else {
@@ -145,7 +147,7 @@ public class Main {
 	public static String CreateTemplate(HashMap employeeData,
 			HttpServletRequest request) throws Exception {
 
-		ReadPropertiesFile.readConfig();
+		ReadPropertiesFile.readConfig(request, null);
 		String emailBody = "";
 		String[] templates = Constants.templates.split(",");
 
@@ -161,32 +163,33 @@ public class Main {
 		return ((int) (Math.random() * (maximum - minimum))) + minimum;
 	}
 
-	 public static void dataForSendMail(HttpServletRequest request,
-			   String UPLOAD_DIR_IMG, HttpServletResponse response)
-			   throws Exception {
-			  ArrayList EmpWithBirthDaysList = new ArrayList();
-			  ArrayList TemplateStrings = new ArrayList();
-			  ArrayList<String> AllEmails = new ArrayList<String>();
-			  String id = "";
+	public static void dataForSendMail(HttpServletRequest request,
+			String UPLOAD_DIR_IMG, HttpServletResponse response)
+			throws Exception {
+		ArrayList EmpWithBirthDaysList = new ArrayList();
+		ArrayList TemplateStrings = new ArrayList();
+		ArrayList<String> AllEmails = new ArrayList<String>();
+		String id = "";
 
-			  ReadPropertiesFile.readConfig();
+		ReadPropertiesFile.readConfig(request, response);
 
-			  getEmpWithBday(EmpWithBirthDaysList, AllEmails, request, response);
+		getEmpWithBday(EmpWithBirthDaysList, AllEmails, request, response);
 
-			  for (int i = 0; i < EmpWithBirthDaysList.size(); i++) {
-			   HashMap singleEmployee = new HashMap();
-			   singleEmployee = (HashMap) EmpWithBirthDaysList.get(i);
-			   String emailTo = (String) singleEmployee.get("email");
-			   // String emailBody = TemplateStrings.get(i).toString();
-			   String emailBody = CreateTemplate(singleEmployee, request);
-			   String[] bcc = new String[AllEmails.size()];
-			   bcc = AllEmails.toArray(bcc);
-			   id = (String) singleEmployee.get("id");
-			   System.out.println("Creating template for email!");
-			   new SendEmail().sendMail(Constants.setSubject, emailBody,
-			     singleEmployee, bcc, request, UPLOAD_DIR_IMG);
-			   int status = GenericUtility.insertMailLogs(singleEmployee);
-			  }
+		for (int i = 0; i < EmpWithBirthDaysList.size(); i++) {
+			HashMap singleEmployee = new HashMap();
+			singleEmployee = (HashMap) EmpWithBirthDaysList.get(i);
+			String emailTo = (String) singleEmployee.get("email");
+			// String emailBody = TemplateStrings.get(i).toString();
+			String emailBody = CreateTemplate(singleEmployee, request);
+			String[] bcc = new String[AllEmails.size()];
+			bcc = AllEmails.toArray(bcc);
+			id = (String) singleEmployee.get("id");
+			System.out.println("Creating template for email!");
+			new SendEmail().sendMail(Constants.setSubject, emailBody,
+					singleEmployee, bcc, request, UPLOAD_DIR_IMG);
+			int status = GenericUtility.insertMailLogs(singleEmployee, request,
+					response);
+		}
 
-			 }
+	}
 }

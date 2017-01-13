@@ -27,7 +27,9 @@ import javax.servlet.http.Part;
 
 public class GenericUtility {
 	public static List getEmployeesWithBirthdayToday(List columnNames,
-			List EmpWithBirthDaysList,HttpServletRequest request,HttpServletResponse response) throws FileNotFoundException, IOException  {
+			List EmpWithBirthDaysList, HttpServletRequest request,
+			HttpServletResponse response) throws FileNotFoundException,
+			IOException {
 		ResultSet rs = null;
 		int counter = 1;
 		Connection con = null;
@@ -39,77 +41,79 @@ public class GenericUtility {
 		PreparedStatement ps = null;
 		PreparedStatement ps1 = null;
 		ResultSet rs1 = null;
-try{
-		con = ConnectionManager.getConnection();
-		ps = con.prepareStatement(SqlQueries.getEmpOnBirthDay);
-		ps.setString(counter++, date + "%");
-		rs = ps.executeQuery();
+		try {
+			con = ConnectionManager.getConnection(request, response);
+			ps = con.prepareStatement(SqlQueries.getEmpOnBirthDay);
+			ps.setString(counter++, date + "%");
+			rs = ps.executeQuery();
 
-		while (rs.next()) {
-			HashMap EmpWithBirthDaysHashMap = new HashMap();
+			while (rs.next()) {
+				HashMap EmpWithBirthDaysHashMap = new HashMap();
 
-			EmpWithBirthDaysHashMap.put((columnNames.get(0)),
-					rs.getString("id"));
-			EmpWithBirthDaysHashMap.put(columnNames.get(1),
-					rs.getString("name"));
-			EmpWithBirthDaysHashMap
-					.put(columnNames.get(2), rs.getString("dob"));
-			EmpWithBirthDaysHashMap.put(columnNames.get(3),
-					rs.getString("month"));
-			EmpWithBirthDaysHashMap.put(columnNames.get(4),
-					rs.getString("location"));
-			EmpWithBirthDaysHashMap.put(columnNames.get(5),
-					rs.getString("email"));
+				EmpWithBirthDaysHashMap.put((columnNames.get(0)),
+						rs.getString("id"));
+				EmpWithBirthDaysHashMap.put(columnNames.get(1),
+						rs.getString("name"));
+				EmpWithBirthDaysHashMap.put(columnNames.get(2),
+						rs.getString("dob"));
+				EmpWithBirthDaysHashMap.put(columnNames.get(3),
+						rs.getString("month"));
+				EmpWithBirthDaysHashMap.put(columnNames.get(4),
+						rs.getString("location"));
+				EmpWithBirthDaysHashMap.put(columnNames.get(5),
+						rs.getString("email"));
 
-			EmpWithBirthDaysList.add(EmpWithBirthDaysHashMap);
+				EmpWithBirthDaysList.add(EmpWithBirthDaysHashMap);
 
-		}
-
-		counter = 1;
-		boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
-		if (!isLeapYear) {
-			if (date.equals("01/03/")) {
-				ps1 = con.prepareStatement(SqlQueries.getEmpOnBirthDay);
-				ps1.setString(counter++, "29/02/%");
-				rs1 = ps1.executeQuery();
-				while (rs1.next()) {
-					HashMap EmpWithBirthDaysHashMap = new HashMap();
-
-					EmpWithBirthDaysHashMap.put((columnNames.get(0)),
-							rs1.getString("id"));
-					EmpWithBirthDaysHashMap.put(columnNames.get(1),
-							rs1.getString("name"));
-					EmpWithBirthDaysHashMap.put(columnNames.get(2),
-							rs1.getString("dob"));
-					EmpWithBirthDaysHashMap.put(columnNames.get(3),
-							rs1.getString("month"));
-					EmpWithBirthDaysHashMap.put(columnNames.get(4),
-							rs1.getString("location"));
-					EmpWithBirthDaysHashMap.put(columnNames.get(5),
-							rs1.getString("email"));
-
-					EmpWithBirthDaysList.add(EmpWithBirthDaysHashMap);
-				}
 			}
 
+			counter = 1;
+			boolean isLeapYear = ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
+			if (!isLeapYear) {
+				if (date.equals("01/03/")) {
+					ps1 = con.prepareStatement(SqlQueries.getEmpOnBirthDay);
+					ps1.setString(counter++, "29/02/%");
+					rs1 = ps1.executeQuery();
+					while (rs1.next()) {
+						HashMap EmpWithBirthDaysHashMap = new HashMap();
+
+						EmpWithBirthDaysHashMap.put((columnNames.get(0)),
+								rs1.getString("id"));
+						EmpWithBirthDaysHashMap.put(columnNames.get(1),
+								rs1.getString("name"));
+						EmpWithBirthDaysHashMap.put(columnNames.get(2),
+								rs1.getString("dob"));
+						EmpWithBirthDaysHashMap.put(columnNames.get(3),
+								rs1.getString("month"));
+						EmpWithBirthDaysHashMap.put(columnNames.get(4),
+								rs1.getString("location"));
+						EmpWithBirthDaysHashMap.put(columnNames.get(5),
+								rs1.getString("email"));
+
+						EmpWithBirthDaysList.add(EmpWithBirthDaysHashMap);
+					}
+				}
+
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			String errMsg = "Something went wrng..!!!";
+			RedirectToError.errorPage(request, response, errMsg);
 		}
-}catch(SQLException | ClassNotFoundException e){
-	String errMsg="Something went wrng..!!!";
-	RedirectToError.errorPage(request, response,errMsg);
-}
 
 		connectionClose(con, rs, ps);
 
 		return EmpWithBirthDaysList;
 	}
 
-	public static int insertMailLogs(HashMap singleEmployee)
-			throws ClassNotFoundException, SQLException, FileNotFoundException, IOException {
+	public static int insertMailLogs(HashMap singleEmployee,
+			HttpServletRequest request, HttpServletResponse response)
+			throws ClassNotFoundException, SQLException, FileNotFoundException,
+			IOException {
 		ResultSet rs = null;
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection();
+		con = ConnectionManager.getConnection(request, response);
 
 		Date currentDate = new Date();
 		SimpleDateFormat dt1 = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
@@ -142,13 +146,15 @@ try{
 		return "";
 	}
 
-	public static List getColumnNames(List columnNames)
-			throws ClassNotFoundException, SQLException, FileNotFoundException, IOException {
+	public static List getColumnNames(List columnNames,
+			HttpServletRequest request, HttpServletResponse response)
+			throws ClassNotFoundException, SQLException, FileNotFoundException,
+			IOException {
 		ResultSet rs = null;
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection();
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getColumnNames);
 		rs = ps.executeQuery();
 		while (rs.next()) {
@@ -159,13 +165,15 @@ try{
 
 	}
 
-	public static List getAllEmpEmails(List AllEmails)
-			throws ClassNotFoundException, SQLException, FileNotFoundException, IOException {
+	public static List getAllEmpEmails(List AllEmails,
+			HttpServletRequest request, HttpServletResponse response)
+			throws ClassNotFoundException, SQLException, FileNotFoundException,
+			IOException {
 		ResultSet rs = null;
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection();
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getAllEmpEmails);
 		rs = ps.executeQuery();
 		while (rs.next()) {
@@ -176,14 +184,15 @@ try{
 
 	}
 
-	public static List getAllMailLogs() throws ClassNotFoundException,
+	public static List getAllMailLogs(HttpServletRequest request,
+			HttpServletResponse response) throws ClassNotFoundException,
 			SQLException, FileNotFoundException, IOException {
 
 		ResultSet rs = null;
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection();
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getAllMailLogs);
 		rs = ps.executeQuery();
 		List<HashMap> mailLogs = new ArrayList<HashMap>();
@@ -201,14 +210,15 @@ try{
 
 	}
 
-	public static List getPastWeekMailLogs() throws ClassNotFoundException,
+	public static List getPastWeekMailLogs(HttpServletRequest request,
+			HttpServletResponse response) throws ClassNotFoundException,
 			SQLException, FileNotFoundException, IOException {
 
 		ResultSet rs = null;
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection();
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getLastWeekMailLogs);
 
 		Date currentDate = new Date();
@@ -238,13 +248,14 @@ try{
 	}
 
 	public static void XlsToDb(int id, String name, String dob, String month,
-			String location, String email) throws ClassNotFoundException,
+			String location, String email, HttpServletRequest request,
+			HttpServletResponse response) throws ClassNotFoundException,
 			SQLException, FileNotFoundException, IOException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		int counter = 1;
-		con = ConnectionManager.getConnection();
+		con = ConnectionManager.getConnection(request, response);
 
 		pstm = con.prepareStatement(SqlQueries.insertXlsToDb);
 		pstm.setInt(counter++, id);
@@ -259,13 +270,14 @@ try{
 
 	}
 
-	public static ResultSet getAllEmpData() throws ClassNotFoundException,
+	public static ResultSet getAllEmpData(HttpServletRequest request,
+			HttpServletResponse response) throws ClassNotFoundException,
 			SQLException, FileNotFoundException, IOException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		Statement stmt = null;
-		con = ConnectionManager.getConnection();
+		con = ConnectionManager.getConnection(request, response);
 		con.setAutoCommit(false);
 		stmt = con.createStatement();
 
@@ -298,7 +310,8 @@ try{
 		}
 	}
 
-	public static ResultSet authenticateUser(String username, String password)
+	public static ResultSet authenticateUser(String username, String password,
+			HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, ClassNotFoundException,
 			NoSuchAlgorithmException, FileNotFoundException, IOException {
 
@@ -309,8 +322,8 @@ try{
 		int counter = 1;
 		String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 		String cryptPassword = "";
-		cryptPassword = GenericUtility.encryptPassword(password+salt);
-		con = ConnectionManager.getConnection();
+		cryptPassword = GenericUtility.encryptPassword(password + salt);
+		con = ConnectionManager.getConnection(request, response);
 		con.setAutoCommit(false);
 		pstm = con.prepareStatement(SqlQueries.authenticateUser);
 		pstm.setString(counter++, username);
@@ -320,22 +333,22 @@ try{
 	}
 
 	public static String encryptPassword(String password) throws SQLException,
-	ClassNotFoundException, NoSuchAlgorithmException {
+			ClassNotFoundException, NoSuchAlgorithmException {
 		String md5 = null;
-		if(null == password) return null;
+		if (null == password)
+			return null;
 		try {
-			//Create MessageDigest object for MD5
+			// Create MessageDigest object for MD5
 			MessageDigest digest = MessageDigest.getInstance("MD5");
-			//Update input string in message digest
+			// Update input string in message digest
 			digest.update(password.getBytes(), 0, password.length());
-			//Converts message digest value in base 16 (hex) 
+			// Converts message digest value in base 16 (hex)
 			md5 = new BigInteger(1, digest.digest()).toString(16);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 		return md5;
 	}
-	
 
 	public static void callupdateCronJobTime(HttpServletRequest req,
 			HttpServletResponse res) throws IOException {
@@ -386,7 +399,9 @@ try{
 		System.out.println(response.toString());
 	}
 
-	public static int changePassword(String conf_pass) throws FileNotFoundException, IOException {
+	public static int changePassword(String conf_pass,
+			HttpServletRequest request, HttpServletResponse response)
+			throws FileNotFoundException, IOException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
@@ -394,61 +409,63 @@ try{
 		int counter = 1;
 		int status = 0;
 		try {
-			con = ConnectionManager.getConnection();
-			
+			con = ConnectionManager.getConnection(request, response);
+
 			String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 			String cryptPassword = "";
-			cryptPassword = GenericUtility.encryptPassword(conf_pass+salt);
-			
+			cryptPassword = GenericUtility.encryptPassword(conf_pass + salt);
+
 			pstm = con.prepareStatement(SqlQueries.updatePassword);
-			 counter = 1;
+			counter = 1;
 			pstm.setString(counter++, cryptPassword);
 			status = pstm.executeUpdate();
-		
-		} catch (SQLException | ClassNotFoundException | NoSuchAlgorithmException e) {
-			
-			e.printStackTrace();
-		}
-		return status;
-	}
-	
-	public static int changeTimeStamp(String timestamp) throws FileNotFoundException, IOException {
-		Connection con = null;
-		ResultSet rs = null;
-		PreparedStatement pstm = null;
-		Statement stmt = null;
-		int counter = 1;
-		int status = 0;
-		try {
-			con = ConnectionManager.getConnection();
-			
-			
-			
-			pstm = con.prepareStatement(SqlQueries.updatetimestamp);
-			 counter = 1;
-			pstm.setString(counter++, timestamp);
-			status = pstm.executeUpdate();
-		
-		} catch (SQLException | ClassNotFoundException e) {
-			
+
+		} catch (SQLException | ClassNotFoundException
+				| NoSuchAlgorithmException e) {
+
 			e.printStackTrace();
 		}
 		return status;
 	}
 
-	public static ResultSet findLink(String token) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+	public static int changeTimeStamp(String timestamp,
+			HttpServletRequest request, HttpServletResponse response)
+			throws FileNotFoundException, IOException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		Statement stmt = null;
 		int counter = 1;
-		con = ConnectionManager.getConnection();
+		int status = 0;
+		try {
+			con = ConnectionManager.getConnection(request, response);
+
+			pstm = con.prepareStatement(SqlQueries.updatetimestamp);
+			counter = 1;
+			pstm.setString(counter++, timestamp);
+			status = pstm.executeUpdate();
+
+		} catch (SQLException | ClassNotFoundException e) {
+
+			e.printStackTrace();
+		}
+		return status;
+	}
+
+	public static ResultSet findLink(String token, HttpServletRequest request,
+			HttpServletResponse response) throws SQLException,
+			ClassNotFoundException, FileNotFoundException, IOException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement pstm = null;
+		Statement stmt = null;
+		int counter = 1;
+		con = ConnectionManager.getConnection(request, response);
 		pstm = con.prepareStatement(SqlQueries.checkLinkToken);
 		pstm.setString(counter++, token);
 		rs = pstm.executeQuery();
 		return rs;
-		
+
 	}
-	
 
 }

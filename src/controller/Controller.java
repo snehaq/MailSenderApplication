@@ -54,7 +54,7 @@ public class Controller extends HttpServlet {
 		String mode = request.getParameter("mode");
 		if (("sendMail").equals(mode)) {
 			try {
-				ReadPropertiesFile.readConfig();
+				ReadPropertiesFile.readConfig(request, response);
 			} catch (FileNotFoundException e) {
 				String errMsg = "FileNotFoundException.!!!";
 				RedirectToError.errorPage(request, response, errMsg);
@@ -67,6 +67,7 @@ public class Controller extends HttpServlet {
 			if (Constants.setStatus.equals("enable")) {
 				try {
 					Main.dataForSendMail(request, UPLOAD_DIR_IMG, response);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -105,7 +106,7 @@ public class Controller extends HttpServlet {
 		ResultSet rs = null;
 		String msg = null;
 		try {
-			rs = GenericUtility.findLink(token);
+			rs = GenericUtility.findLink(token, request, response);
 			if (rs.next()) {
 				long linkTime = Long.parseLong(token);
 				long currentTime = new Date().getTime();
@@ -173,7 +174,8 @@ public class Controller extends HttpServlet {
 			HttpServletResponse response) {
 		String conf_pass = request.getParameter("conf_pass");
 		try {
-			int status = GenericUtility.changePassword(conf_pass);
+			int status = GenericUtility.changePassword(conf_pass, request,
+					response);
 			response.getWriter().write(new Gson().toJson(status));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -184,7 +186,7 @@ public class Controller extends HttpServlet {
 			HttpServletResponse response) {
 		// SMTP server information
 		try {
-			ReadPropertiesFile.readConfig();
+			ReadPropertiesFile.readConfig(request, response);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -211,7 +213,8 @@ public class Controller extends HttpServlet {
 		ResultSet user = null;
 		String status = "";
 		try {
-			user = GenericUtility.authenticateUser(username, password);
+			user = GenericUtility.authenticateUser(username, password, request,
+					response);
 		} catch (ClassNotFoundException | SQLException
 				| NoSuchAlgorithmException | IOException e) {
 		}
@@ -255,13 +258,14 @@ public class Controller extends HttpServlet {
 		List<HashMap> mailLogs = new ArrayList<HashMap>();
 		if (selectedOption.equals("Last Week")) {
 			try {
-				mailLogs = GenericUtility.getPastWeekMailLogs();
+				mailLogs = GenericUtility
+						.getPastWeekMailLogs(request, response);
 			} catch (ClassNotFoundException | SQLException | IOException e) {
 				e.printStackTrace();
 			}
 		} else {
 			try {
-				mailLogs = GenericUtility.getAllMailLogs();
+				mailLogs = GenericUtility.getAllMailLogs(request, response);
 			} catch (ClassNotFoundException | SQLException | IOException e) {
 				e.printStackTrace();
 			}
@@ -292,8 +296,9 @@ public class Controller extends HttpServlet {
 			for (int i = 0; i < final_Templates.length; i++) {
 				templatesSelected += final_Templates[i] + ",";
 			}
-			String path = System.getProperty("user.home")
-					+ "/Desktop/MailSendingApplication.properties";
+			String path = request.getServletContext().getRealPath(
+					File.separator)
+					+ "MailSendingApplication.properties";
 			FileInputStream in = null;
 			try {
 				in = new FileInputStream(path);
@@ -353,7 +358,7 @@ public class Controller extends HttpServlet {
 				} else if (listOfFiles[i].isDirectory()) {
 				}
 			}
-			ReadPropertiesFile.readConfig();
+			ReadPropertiesFile.readConfig(request, response);
 			String[] templatesFromPropertiesFile = Constants.templates
 					.split(",");
 			ArrayList<String> templatesAlreadySet = new ArrayList<String>();
@@ -362,7 +367,8 @@ public class Controller extends HttpServlet {
 			}
 			List<HashMap> pastWeekMailLogs = new ArrayList<HashMap>();
 			try {
-				pastWeekMailLogs = GenericUtility.getPastWeekMailLogs();
+				pastWeekMailLogs = GenericUtility.getPastWeekMailLogs(request,
+						response);
 			} catch (ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -452,8 +458,8 @@ public class Controller extends HttpServlet {
 			HttpServletResponse response) {
 		String status = request.getParameter("status");
 
-		String path = System.getProperty("user.home")
-				+ "/Desktop/MailSendingApplication.properties";
+		String path = request.getServletContext().getRealPath(File.separator)
+				+ "MailSendingApplication.properties";
 		FileInputStream in = null;
 
 		try {
@@ -478,8 +484,8 @@ public class Controller extends HttpServlet {
 		String minutes = request.getParameter("minutes");
 		String am_pm = request.getParameter("am/pm");
 		String timeToRun = hours + ":" + minutes + " " + am_pm;
-		String path = System.getProperty("user.home")
-				+ "/Desktop/MailSendingApplication.properties";
+		String path = request.getServletContext().getRealPath(File.separator)
+				+ "MailSendingApplication.properties";
 		FileInputStream in = null;
 		try {
 			in = new FileInputStream(path);
