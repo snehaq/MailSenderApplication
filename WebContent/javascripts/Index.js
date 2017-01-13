@@ -106,12 +106,26 @@ $(document).ready(function(){
 	});
 
 	
-	
+	$('input[type="checkbox"][name="templateImgs"]').on('change',function(){
+		  var getArrVal = $('input[type="checkbox"][name="templateImgs"]:checked').map(function(){
+		    return this.value;
+		  }).toArray();
+		  
+		  if(getArrVal.length){
+		    //execute the code
+		  $('#checkBoxValidationMsg').html("");
+		   
+		  } else {
+		    $(this).prop("checked",true);
+		    $('#checkBoxValidationMsg').html("At least one value must be checked!");
+		    return false;
+		    
+		  };
+		});
 
 	$("#setTemplatesForm").submit(function(e) {
-
+		
 	    var url = "/MailSendingApplication/controller?mode=setTemplatesInProperties"; 
-
 	    $.ajax({
 	           type: "POST",
 	           url: url,
@@ -129,13 +143,6 @@ $(document).ready(function(){
 	 $('[data-toggle="popover"]').popover({
 	        trigger : 'hover'
 	    });
-	 
-	 
-	 
-	 
-	 
-	 
-	 
 	 
 	 
 	 var modal = document.getElementById('myModal');
