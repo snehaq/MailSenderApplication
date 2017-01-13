@@ -17,8 +17,6 @@ public class ReadPropertiesFile {
 
 		Properties pro = new Properties();
 		try {
-			// String path = System.getProperty("user.home")
-			// + "/Desktop/MailSendingApplication.properties";
 			String path = request.getServletContext().getRealPath(
 					File.separator)
 					+ "MailSendingApplication.properties";

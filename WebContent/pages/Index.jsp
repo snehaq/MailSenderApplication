@@ -265,6 +265,7 @@
 					}
 				%>
 			</div>
+			<div id="checkBoxValidationMsg"></div>
 			<div class="row"
 				style="background-color: #f7f7f7; padding-bottom: 20px; padding-top: 20px; padding-left: 150px;">
 				<div class="col-md-2"></div>
