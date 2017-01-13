@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import javaConstants.Constants;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -24,17 +25,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import com.google.gson.Gson;
-
-import javaConstants.Constants;
 import mail.Main;
 import utility.AddXlsToDb;
 import utility.CronJob;
 import utility.GenericUtility;
-import utility.UnzipImages;
+import utility.PasswordRecoveryMail;
 import utility.ReadPropertiesFile;
 import utility.RedirectToError;
-import utility.PasswordRecoveryMail;
+import utility.UnzipImages;
+
+import com.google.gson.Gson;
 
 @WebServlet("/controller")
 @MultipartConfig
@@ -56,17 +56,17 @@ public class Controller extends HttpServlet {
 			try {
 				ReadPropertiesFile.readConfig();
 			} catch (FileNotFoundException e) {
-				String errMsg="FileNotFoundException.!!!";
-				RedirectToError.errorPage(request, response,errMsg);
+				String errMsg = "FileNotFoundException.!!!";
+				RedirectToError.errorPage(request, response, errMsg);
 				e.printStackTrace();
 			} catch (IOException e) {
-				String errMsg="IOException..!!!";
-				RedirectToError.errorPage(request, response,errMsg);
+				String errMsg = "IOException..!!";
+				RedirectToError.errorPage(request, response, errMsg);
 				e.printStackTrace();
 			}
 			if (Constants.setStatus.equals("enable")) {
 				try {
-					Main.dataForSendMail(request, UPLOAD_DIR_IMG,response);
+					Main.dataForSendMail(request, UPLOAD_DIR_IMG, response);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -83,17 +83,14 @@ public class Controller extends HttpServlet {
 			HttpSession session = request.getSession(false);
 			if (session != null) {
 				redirectToMainPageWithData(request, response);
-			} 
-			else
-			{
-				response.sendRedirect("./pages/Login.jsp"); 
+			} else {
+				response.sendRedirect("./pages/Login.jsp");
 			}
-		}else if (("checkExpiry").equals(mode)) {
+		} else if (("checkExpiry").equals(mode)) {
 			checkExpiry(request, response);
-		}
-		else {
+		} else {
 			response.getWriter().append("CronJob Scheduled: ")
-			.append(request.getContextPath());
+					.append(request.getContextPath());
 			try {
 				CronJob.ScheduleCronJob(request, response);
 			} catch (Exception e) {
@@ -101,28 +98,27 @@ public class Controller extends HttpServlet {
 			}
 		}
 	}
-	private void checkExpiry(HttpServletRequest request, HttpServletResponse response) {
-		String token=request.getParameter("token");
-		ResultSet rs=null;
-		String msg=null;
-		try {
-			rs=GenericUtility.findLink(token);
-			if(rs.next()){
-				long linkTime=Long.parseLong(token);
-				long currentTime=new Date().getTime();
-				long timeDifference=currentTime-linkTime;
 
-				if(timeDifference>86400000)
-				{	 msg="The link has expired!";
-				request.setAttribute("msg", msg);
+	private void checkExpiry(HttpServletRequest request,
+			HttpServletResponse response) {
+		String token = request.getParameter("token");
+		ResultSet rs = null;
+		String msg = null;
+		try {
+			rs = GenericUtility.findLink(token);
+			if (rs.next()) {
+				long linkTime = Long.parseLong(token);
+				long currentTime = new Date().getTime();
+				long timeDifference = currentTime - linkTime;
+
+				if (timeDifference > 86400000) {
+					msg = "The link has expired!";
+					request.setAttribute("msg", msg);
+				} else {
+					msg = null;
 				}
-				else
-				{
-					msg=null;
-				}
-			}
-			else{
-				msg="The link has expired!";
+			} else {
+				msg = "The link has expired!";
 				request.setAttribute("msg", msg);
 			}
 		} catch (SQLException e1) {
@@ -134,7 +130,8 @@ public class Controller extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		RequestDispatcher rd = request.getRequestDispatcher("pages/ChangePassword.jsp");
+		RequestDispatcher rd = request
+				.getRequestDispatcher("pages/ChangePassword.jsp");
 		try {
 			rd.forward(request, response);
 		} catch (ServletException e) {
@@ -143,6 +140,7 @@ public class Controller extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -161,27 +159,29 @@ public class Controller extends HttpServlet {
 			mailLogSelectChange(request, response);
 		} else if (("loginAuthentication").equals(mode)) {
 			loginAuthentication(request, response);
-		}else if("recoveryEmail".equals(mode)){
-			recoveryEmail(request,response);
-		}else if("changePassword".equals(mode)){
-			changePassword(request,response);
-		}
-		else if("logout".equals(mode)){
+		} else if ("recoveryEmail".equals(mode)) {
+			recoveryEmail(request, response);
+		} else if ("changePassword".equals(mode)) {
+			changePassword(request, response);
+		} else if ("logout".equals(mode)) {
 			System.out.println("in logout");
-			userLogout(request,response);
+			userLogout(request, response);
 		}
 	}
 
-	private void changePassword(HttpServletRequest request, HttpServletResponse response) {
+	private void changePassword(HttpServletRequest request,
+			HttpServletResponse response) {
 		String conf_pass = request.getParameter("conf_pass");
 		try {
-			int  status=GenericUtility.changePassword(conf_pass);
+			int status = GenericUtility.changePassword(conf_pass);
 			response.getWriter().write(new Gson().toJson(status));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	public void recoveryEmail(HttpServletRequest request, HttpServletResponse response) {
+
+	public void recoveryEmail(HttpServletRequest request,
+			HttpServletResponse response) {
 		// SMTP server information
 		try {
 			ReadPropertiesFile.readConfig();
@@ -195,7 +195,7 @@ public class Controller extends HttpServlet {
 		try {
 			String status = "true";
 
-			mailer.sendHtmlEmail(request,response);
+			mailer.sendHtmlEmail(request, response);
 			response.getWriter().write(new Gson().toJson(status));
 			System.out.println("Email sent.");
 		} catch (Exception ex) {
@@ -203,6 +203,7 @@ public class Controller extends HttpServlet {
 			ex.printStackTrace();
 		}
 	}
+
 	private void loginAuthentication(HttpServletRequest request,
 			HttpServletResponse response) {
 		String username = request.getParameter("username");
@@ -230,8 +231,9 @@ public class Controller extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 	public void userLogout(HttpServletRequest request,
-			HttpServletResponse response)  {
+			HttpServletResponse response) {
 		// check for an existing session and invalidate it if exists
 		HttpSession session = request.getSession(false);
 
@@ -244,8 +246,9 @@ public class Controller extends HttpServlet {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} 
+		}
 	}
+
 	private void mailLogSelectChange(HttpServletRequest request,
 			HttpServletResponse response) {
 		String selectedOption = request.getParameter("selectedOption");
@@ -269,6 +272,7 @@ public class Controller extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 	public void setTemplatesInProperties(HttpServletRequest request,
 			HttpServletResponse response) {
 		String msg = "";
@@ -313,9 +317,10 @@ public class Controller extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 	private void redirectToMainPageWithData(HttpServletRequest request,
-			HttpServletResponse response)  throws FileNotFoundException {
-		List<String> imagePath =null;
+			HttpServletResponse response) throws FileNotFoundException {
+		List<String> imagePath = null;
 
 		String relativeWebPath = "/templateImgs";
 		String absoluteDiskPath = getServletContext().getRealPath(
@@ -331,15 +336,16 @@ public class Controller extends HttpServlet {
 		File[] listOfFiles = templateImageFolder.listFiles();
 		File[] listOfTemplateFiles = templateHtmlFolder.listFiles();
 		List templatesList = new ArrayList();
-		try{
+		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
-				templatesList.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+				templatesList
+						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 			imagePath = new ArrayList<String>();
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (listOfFiles[i].isFile()) {
-					if (templatesList.contains(listOfFiles[i].getName()
-							.split("\\.")[0])) {
+					if (templatesList.contains(listOfFiles[i].getName().split(
+							"\\.")[0])) {
 
 						imagePath.add("templateImgs" + "/"
 								+ listOfFiles[i].getName());
@@ -348,7 +354,8 @@ public class Controller extends HttpServlet {
 				}
 			}
 			ReadPropertiesFile.readConfig();
-			String[] templatesFromPropertiesFile = Constants.templates.split(",");
+			String[] templatesFromPropertiesFile = Constants.templates
+					.split(",");
 			ArrayList<String> templatesAlreadySet = new ArrayList<String>();
 			for (int i = 0; i < templatesFromPropertiesFile.length; i++) {
 				templatesAlreadySet.add(templatesFromPropertiesFile[i]);
@@ -363,11 +370,12 @@ public class Controller extends HttpServlet {
 			request.setAttribute("pastWeekMailLogs", pastWeekMailLogs);
 			request.setAttribute("templateImg", imagePath);
 			request.setAttribute("templatesSelected", templatesAlreadySet);
-			RequestDispatcher rd = request.getRequestDispatcher("pages/Index.jsp");
+			RequestDispatcher rd = request
+					.getRequestDispatcher("pages/Index.jsp");
 			rd.forward(request, response);
-		}catch(NullPointerException e){
-			String errMsg="Something went wrng..!!!";
-			RedirectToError.errorPage(request, response,errMsg);
+		} catch (NullPointerException e) {
+			String errMsg = "Something went wrng..!!!";
+			RedirectToError.errorPage(request, response, errMsg);
 			e.printStackTrace();
 		} catch (ServletException e) {
 			e.printStackTrace();
@@ -375,6 +383,7 @@ public class Controller extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 	private void zipUpload(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		String applicationPath = request.getServletContext().getRealPath("");
@@ -412,6 +421,7 @@ public class Controller extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 	public void uploadFile(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		String applicationPath = request.getServletContext().getRealPath("");
@@ -426,7 +436,8 @@ public class Controller extends HttpServlet {
 				fileName = GenericUtility.getFileName(part);
 
 				part.write(uploadFilePath + File.separator + fileName);
-				AddXlsToDb.insertData(fileName, uploadFilePath, request, response);
+				AddXlsToDb.insertData(fileName, uploadFilePath, request,
+						response);
 				String msg = "success";
 				response.getWriter().write(new Gson().toJson(msg));
 			}
@@ -436,6 +447,7 @@ public class Controller extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+
 	public void StatusChange(HttpServletRequest request,
 			HttpServletResponse response) {
 		String status = request.getParameter("status");
@@ -455,10 +467,11 @@ public class Controller extends HttpServlet {
 			props.store(out, null);
 			out.close();
 		} catch (IOException e) {
-			String errMsg="IOException..!!!";
+			String errMsg = "IOException..!!!";
 			RedirectToError.errorPage(request, response, errMsg);
 		}
 	}
+
 	private void setCronJobTime(HttpServletRequest request,
 			HttpServletResponse response) {
 		String hours = request.getParameter("hours");
@@ -471,7 +484,7 @@ public class Controller extends HttpServlet {
 		try {
 			in = new FileInputStream(path);
 		} catch (FileNotFoundException e) {
-			String errMsg="FileNotFoundException..!!!";
+			String errMsg = "FileNotFoundException..!!!";
 
 			RedirectToError.errorPage(request, response, errMsg);
 			e.printStackTrace();
@@ -481,7 +494,7 @@ public class Controller extends HttpServlet {
 			props.load(in);
 			in.close();
 		} catch (IOException e) {
-			String errMsg="IOException..!!!";
+			String errMsg = "IOException..!!!";
 			RedirectToError.errorPage(request, response, errMsg);
 			e.printStackTrace();
 		}
@@ -489,7 +502,7 @@ public class Controller extends HttpServlet {
 		try {
 			out = new FileOutputStream(path);
 		} catch (FileNotFoundException e) {
-			String errMsg="FileNotFoundException..!!!";
+			String errMsg = "FileNotFoundException..!!!";
 
 			RedirectToError.errorPage(request, response, errMsg);
 			e.printStackTrace();
@@ -500,7 +513,7 @@ public class Controller extends HttpServlet {
 			out.close();
 			GenericUtility.callupdateCronJobTime(request, response);
 		} catch (IOException e) {
-			String errMsg="IOException..!!!";
+			String errMsg = "IOException..!!!";
 			RedirectToError.errorPage(request, response, errMsg);
 			e.printStackTrace();
 		}
