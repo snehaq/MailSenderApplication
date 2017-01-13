@@ -1,2 +1,5 @@
-testgitignore
-testgitignore.txt
+build
+.classpath
+.project
+.settings
+bin
