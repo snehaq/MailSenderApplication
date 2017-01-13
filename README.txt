@@ -23,6 +23,7 @@
         setDbSchemaLink= (for e.g) jdbc\:mysql\://localhost\:3306/xlsdata
 	setDbPassword=password of your MYSQL server
 	setDbUsername=username of your MYSQL server
+    *note:place the MailSendingApplication.properties file on desktop
 
 3.) Build the application 
 	In Application directory locate file build.properties.
