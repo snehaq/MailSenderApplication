@@ -91,7 +91,7 @@ public class Controller extends HttpServlet {
 			checkExpiry(request, response);
 		} else {
 			response.getWriter().append("CronJob Scheduled: ")
-					.append(request.getContextPath());
+			.append(request.getContextPath());
 			try {
 				CronJob.ScheduleCronJob(request, response);
 			} catch (Exception e) {
@@ -280,6 +280,23 @@ public class Controller extends HttpServlet {
 			HttpServletResponse response) {
 		String msg = "";
 		String[] selected_value = request.getParameterValues("templateImgs");
+
+		String relativeWebPath = "/templates";
+		String absoluteDiskPath = getServletContext().getRealPath(
+				relativeWebPath);
+		File templateHtmlFolder = new File(absoluteDiskPath);
+		File[] listOfTemplateFiles = templateHtmlFolder.listFiles();
+		List templatesList = new ArrayList();
+		try {
+			for (int i = 0; i < listOfTemplateFiles.length; i++) {
+				templatesList
+				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+			}
+		}
+		catch (Exception e) {
+			msg = "Template html folder not found!";
+		}
+
 		if (selected_value.length == 0) {
 			msg = "validation Error";
 		} else {
@@ -293,7 +310,21 @@ public class Controller extends HttpServlet {
 			}
 			String templatesSelected = "";
 			for (int i = 0; i < final_Templates.length; i++) {
-				templatesSelected += final_Templates[i] + ",";
+				if(templatesList.contains(final_Templates[i]))
+				{
+					templatesSelected += final_Templates[i] + ",";
+
+				}
+				else
+				{
+					System.out.println("template name "+final_Templates[i]+" invalid");
+					System.out.println("dicarding "+final_Templates[i]);
+				}
+			}
+			if(templatesSelected=="")
+			{
+				templatesSelected="template1,";
+				
 			}
 			String path = request.getServletContext().getRealPath(
 					File.separator)
@@ -343,7 +374,7 @@ public class Controller extends HttpServlet {
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 			imagePath = new ArrayList<String>();
 			for (int i = 0; i < listOfFiles.length; i++) {

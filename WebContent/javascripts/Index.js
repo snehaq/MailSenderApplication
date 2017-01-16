@@ -124,7 +124,6 @@ $(document).ready(function(){
 		});
 
 	$("#setTemplatesForm").submit(function(e) {
-		
 	    var url = "/MailSendingApplication/controller?mode=setTemplatesInProperties"; 
 	    $.ajax({
 	           type: "POST",
