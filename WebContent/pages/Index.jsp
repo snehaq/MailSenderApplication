@@ -277,7 +277,7 @@
 						style="color: #fff; width: 200px; height: 50px; background-color: #49b6a9;"
 						id="setTemplateSubmit" />
 				</div>
-			</div>
+			</div> 
 			<div class="row" style="background-color: #f7f7f7; ">
 			<div class="col-md-2"></div>
 			<div class="col-md-10" id="selectTemplateMsg"></div>
