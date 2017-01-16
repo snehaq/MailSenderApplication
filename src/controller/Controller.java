@@ -476,7 +476,7 @@ public class Controller extends HttpServlet {
 				part.write(uploadFilePath + File.separator + fileName);
 				AddXlsToDb.insertData(fileName, uploadFilePath, request,
 						response);
-				String msg = "success";
+				String msg = "success!";
 				response.getWriter().write(new Gson().toJson(msg));
 			}
 		} catch (IllegalStateException | IOException | ServletException e) {
