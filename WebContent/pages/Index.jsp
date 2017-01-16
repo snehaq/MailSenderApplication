@@ -5,6 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<%@ page session="false" %>
 <script
 	src="${pageContext.request.contextPath}/javascripts/jquery.min.js"
 	type="text/javascript"></script>
@@ -265,6 +266,7 @@
 					}
 				%>
 			</div>
+			<div id="checkBoxValidationMsg"></div>
 			<div class="row"
 				style="background-color: #f7f7f7; padding-bottom: 20px; padding-top: 20px; padding-left: 150px;">
 				<div class="col-md-2"></div>

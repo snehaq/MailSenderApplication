@@ -208,6 +208,7 @@ public class Controller extends HttpServlet {
 
 	private void loginAuthentication(HttpServletRequest request,
 			HttpServletResponse response) {
+		System.out.println("in loginAuthentication");
 		String username = request.getParameter("username");
 		String password = request.getParameter("key");
 		ResultSet user = null;
@@ -241,8 +242,6 @@ public class Controller extends HttpServlet {
 		HttpSession session = request.getSession(false);
 
 		if (session != null) {
-
-			session.getId();
 			session.invalidate();
 			try {
 				response.sendRedirect("./pages/Login.jsp");
