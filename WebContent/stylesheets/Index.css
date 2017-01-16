@@ -1,0 +1,94 @@
+#container {
+	margin: 10px auto;
+	padding: 10px 20px;
+	background: #DFE2DF;
+	border-radius: 8px;
+	max-width: 700px;
+}
+
+
+
+.selectFileTBoxes {
+	width: 250px;
+	height: 35px;
+	border-radius: 5px;
+}
+
+.uploadBtns,.logOutBtn {
+	background-color: #49b6a9;
+	width: 100px;
+	height: 35px;
+	color: #fff;
+	border-color: #49b6a9;
+}
+.uploadBtns:hover,.fileUpload:hover {
+	background-color: #379f92;
+	border-color: #379f92;
+	color: #fff;
+}
+.fileUpload {
+	position: relative;
+	overflow: hidden;
+	margin: 10px;
+	background-color: #49b6a9;
+	border-color: #49b6a9;
+}
+
+.fileUpload input {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity =  0);
+}
+
+input[type="radio"] {
+	margin-left: 30px;
+}
+
+#templateChooserUi {
+	position: relative;
+}
+
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	height: 100%;
+	overflow: auto;
+	background-color: rgb(0, 0, 0);
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+	background-color: #fefefe;
+	margin: 15% auto;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 40%;
+	height: 500px;
+}
+
+.close {
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.close:hover,.close:focus {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+}
+#mailLogs
+{
+	overflow-x:scroll;
+	overflow-y:scroll;
+	max-height:200px;
+}

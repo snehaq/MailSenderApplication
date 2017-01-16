@@ -1,0 +1,24 @@
+version: '2'
+services:
+  db:
+    image: mysql/mysql-server
+    environment:
+      MYSQL_ROOT_PASSWORD: root 
+      MYSQL_PASSWORD: root
+      MYSQL_USER: root
+      MYSQL_DATABASE: xlsdata 
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    volumes:
+      - ./WebContent/MailSendingApplication.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+  web:
+    build: .
+    command: bash -c "ant MailSendingApplication && catalina.sh run"
+    volumes:
+      - .:/src
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db

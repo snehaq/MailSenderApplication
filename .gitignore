@@ -1,0 +1,11 @@
+build
+
+.classpath
+
+.project
+
+.settings
+
+bin
+
+WebContent/MailSendingApplication.properties
