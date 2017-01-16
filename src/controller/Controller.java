@@ -468,6 +468,7 @@ public class Controller extends HttpServlet {
 			fileSaveDir.mkdirs();
 		}
 		String fileName = null;
+
 		try {
 			for (Part part : request.getParts()) {
 				fileName = GenericUtility.getFileName(part);

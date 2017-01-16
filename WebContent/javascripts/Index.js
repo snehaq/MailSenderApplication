@@ -153,7 +153,7 @@ $(document).ready(function(){
 				setTimeout(function(){
 					$("#selectTemplateMsg").fadeOut("slow");
 				}, 3000);
-
+ 
 			}
 		});
 
