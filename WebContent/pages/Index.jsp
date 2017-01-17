@@ -83,8 +83,7 @@
 				<div class="col-md-2"></div>
 				<div class="col-md-10">
 					<h4 id="uploadFileMessage"
-						style="margin-top: 10px; color: #d15353; margin-left: 30px; max-width: 400px;">
-
+						style="margin-top: 10px; color: #49b6a9; margin-left: 30px; max-width: 400px;">
 					</h4>
 				</div>
 			</div>
@@ -119,7 +118,7 @@
 				<div class="col-md-2"></div>
 				<div class="col-md-10">
 					<h4 id="imageFileMessage"
-						style="margin-top: 10px; color: #d15353; margin-left: 30px;">
+						style="margin-top: 10px; color:#49b6a9; margin-left: 30px;">
 					</h4>
 				</div>
 			</div>
@@ -189,6 +188,12 @@
 					scheduler time</h4>
 			</div>
 		</div>
+		<div class="row" 
+			style="background-color: #f7f7f7;">
+			<div class="col-md-3">
+			</div>
+			<div class="col-md-7" id="status_timeMsg"></div>
+			</div>
 		
 		<div class="row" id="selectTemplatesLabel"
 			style="background-color: #f7f7f7; margin-top: 20px;">

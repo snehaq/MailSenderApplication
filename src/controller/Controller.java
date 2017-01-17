@@ -504,9 +504,16 @@ public class Controller extends HttpServlet {
 			props.setProperty("setStatus", status);
 			props.store(out, null);
 			out.close();
+
 		} catch (IOException e) {
 			String errMsg = "IOException..!!!";
 			RedirectToError.errorPage(request, response, errMsg);
+			status = "error";
+		}
+		try {
+			response.getWriter().write(new Gson().toJson(status));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -553,6 +560,11 @@ public class Controller extends HttpServlet {
 		} catch (IOException e) {
 			String errMsg = "IOException..!!!";
 			RedirectToError.errorPage(request, response, errMsg);
+			e.printStackTrace();
+		}
+		try {
+			response.getWriter().write(new Gson().toJson(timeToRun));
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

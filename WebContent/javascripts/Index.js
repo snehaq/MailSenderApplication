@@ -1,7 +1,4 @@
 $(document).ready(function(){
-
-
-
 	$('#uploadFileMsg').hide();
 	document.getElementById("selectFileBtn").onchange = function () {
 		document.getElementById("selectFile").value = this.value;
@@ -9,13 +6,8 @@ $(document).ready(function(){
 	document.getElementById("selectZipBtn").onchange = function () {
 		document.getElementById("selectZip").value = this.value;
 	};
-
-
 	$('input[type="radio"]').on('change', function(e) {
-		console.log($(this).val());
 		var status=$(this).val();
-
-
 		$.ajax({
 			type:'post',
 			url: '/MailSendingApplication/controller?mode=statusChange',
@@ -24,9 +16,23 @@ $(document).ready(function(){
 				status: status,
 
 			},
-			success: function(result){
-
-
+			success: function(data){
+				var result=JSON.parse(data);
+				var Msg="";
+				if(result!="error")
+					{
+					str="<h3 style='color:#49b6a9;margin:0'> Status Changed to "+result+"</h3>";
+					}
+				else
+					{
+					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
+					}
+				$("#status_timeMsg").html("");
+				$("#status_timeMsg").append(str);
+				$("#status_timeMsg").show();
+				setTimeout(function(){
+					$("#status_timeMsg").fadeOut("slow");
+				}, 3000);
 			}
 		});
 
@@ -34,8 +40,6 @@ $(document).ready(function(){
 	$('#xlsUploadForm').on('submit', function (e) {
 		var form = $(this)[0]; 
 		var formData = new FormData(form);
-		console.log($(this).attr('id'));
-
 		$.ajax({
 			type: 'post',
 			url: '/MailSendingApplication/controller?mode=xlsUpload',
@@ -43,9 +47,7 @@ $(document).ready(function(){
 			contentType: false,
 			processData: false,
 			success: function (result) {
-				console.log(result);
 				var status=JSON.parse(result);
-
 				if(status=="success")
 				{
 					var str="File successfully uploaded!";
@@ -69,7 +71,6 @@ $(document).ready(function(){
 	$('#imageUploadForm').on('submit', function (e) {
 		var form = $(this)[0]; 
 		var formData = new FormData(form);
-		console.log($(this).attr('id'));
 		$.ajax({
 			type: 'post',
 			url: '/MailSendingApplication/controller?mode=imageUpload',
@@ -97,8 +98,25 @@ $(document).ready(function(){
 			data: formData,
 			contentType: false,
 			processData: false,
-			success: function () {
-				console.log("success");
+			success: function (data) {
+				var result=JSON.parse(data);
+				var Msg="";
+				if(result!="error")
+					{
+					str="<h3 style='color:#49b6a9;margin:0'> Cron Time Changed to "+result+"</h3>";
+					}
+				else
+					{
+					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
+					}
+				$("#status_timeMsg").html("");
+				$("#status_timeMsg").append(str);
+				$("#status_timeMsg").show();
+				setTimeout(function(){
+					$("#status_timeMsg").fadeOut("slow");
+				}, 3000);
+				
+				
 
 			}
 		});
@@ -151,7 +169,7 @@ $(document).ready(function(){
 				setTimeout(function(){
 					$("#selectTemplateMsg").fadeOut("slow");
 				}, 3000);
- 
+
 			}
 		});
 
@@ -174,7 +192,6 @@ $(document).ready(function(){
 
 	// When the user clicks on the button, open the modal 
 	$(document).on('click','.templateImgs',function(){
-		console.log($(this).attr('id'));
 		$('#imgPreview').attr('src',$(this).attr('id'));
 		modal.style.display = "block";
 	});
@@ -192,7 +209,6 @@ $(document).ready(function(){
 	}
 	$('#mailLogsSelectOption').change( function(e) {
 
-		console.log($('#mailLogsSelectOption option:selected').text());
 		var selectedOption=$('#mailLogsSelectOption option:selected').text();
 		$.ajax({
 			type: 'post',
