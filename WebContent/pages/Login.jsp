@@ -78,7 +78,6 @@
 						<input type="email" name="recovery-email" id="recovery-email"
 							class="form-control" autocomplete="off">
 					</div>
-					<!-- <div class="modal-footer"> -->
 					<div class="row">
 						<div class="col-md-2"></div>
 						<div class="col-md-3">
@@ -89,17 +88,10 @@
 						<div class="col-md-3">
 							<button type="button" class="btn btn-custom" id="recoveryBtn">Recovery</button>
 						</div>
-						<!-- </div> -->
-
-						<!-- <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-custom" id="recoveryBtn">Recovery</button> -->
 					</div>
 				</div>
-				<!-- /.modal-content -->
 			</div>
-			<!-- /.modal-dialog -->
 		</div>
-		<!-- /.modal -->
 	</div>
 
 

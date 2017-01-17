@@ -42,7 +42,7 @@ public class GenericUtility {
 		PreparedStatement ps1 = null;
 		ResultSet rs1 = null;
 		try {
-			con = ConnectionManager.getConnection(request, response);
+			con = ConnectionManager.getConnection(request);
 			ps = con.prepareStatement(SqlQueries.getEmpOnBirthDay);
 			ps.setString(counter++, date + "%");
 			rs = ps.executeQuery();
@@ -113,7 +113,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 
 		Date currentDate = new Date();
 		SimpleDateFormat dt1 = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
@@ -154,7 +154,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 		ps = con.prepareStatement(SqlQueries.getColumnNames);
 		rs = ps.executeQuery();
 		while (rs.next()) {
@@ -173,7 +173,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 		ps = con.prepareStatement(SqlQueries.getAllEmpEmails);
 		rs = ps.executeQuery();
 		while (rs.next()) {
@@ -192,7 +192,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 		ps = con.prepareStatement(SqlQueries.getAllMailLogs);
 		rs = ps.executeQuery();
 		List<HashMap> mailLogs = new ArrayList<HashMap>();
@@ -218,7 +218,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 		ps = con.prepareStatement(SqlQueries.getLastWeekMailLogs);
 
 		Date currentDate = new Date();
@@ -255,7 +255,7 @@ public class GenericUtility {
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		int counter = 1;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 
 		pstm = con.prepareStatement(SqlQueries.insertXlsToDb);
 		pstm.setInt(counter++, id);
@@ -277,7 +277,7 @@ public class GenericUtility {
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		Statement stmt = null;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 		con.setAutoCommit(false);
 		stmt = con.createStatement();
 
@@ -323,7 +323,7 @@ public class GenericUtility {
 		String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 		String cryptPassword = "";
 		cryptPassword = GenericUtility.encryptPassword(password + salt);
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 		con.setAutoCommit(false);
 		pstm = con.prepareStatement(SqlQueries.authenticateUser);
 		pstm.setString(counter++, username);
@@ -409,7 +409,7 @@ public class GenericUtility {
 		int counter = 1;
 		int status = 0;
 		try {
-			con = ConnectionManager.getConnection(request, response);
+			con = ConnectionManager.getConnection(request);
 
 			String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 			String cryptPassword = "";
@@ -429,8 +429,8 @@ public class GenericUtility {
 	}
 
 	public static int changeTimeStamp(String timestamp,
-			HttpServletRequest request, HttpServletResponse response)
-			throws FileNotFoundException, IOException {
+			HttpServletRequest request) throws FileNotFoundException,
+			IOException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
@@ -438,7 +438,7 @@ public class GenericUtility {
 		int counter = 1;
 		int status = 0;
 		try {
-			con = ConnectionManager.getConnection(request, response);
+			con = ConnectionManager.getConnection(request);
 
 			pstm = con.prepareStatement(SqlQueries.updatetimestamp);
 			counter = 1;
@@ -460,7 +460,7 @@ public class GenericUtility {
 		PreparedStatement pstm = null;
 		Statement stmt = null;
 		int counter = 1;
-		con = ConnectionManager.getConnection(request, response);
+		con = ConnectionManager.getConnection(request);
 		pstm = con.prepareStatement(SqlQueries.checkLinkToken);
 		pstm.setString(counter++, token);
 		rs = pstm.executeQuery();

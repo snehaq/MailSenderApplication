@@ -8,12 +8,10 @@ import java.util.Properties;
 import javaConstants.Constants;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class ReadPropertiesFile {
-	public static void readConfig(HttpServletRequest request,
-			HttpServletResponse response) throws FileNotFoundException,
-			IOException {
+	public static void readConfig(HttpServletRequest request)
+			throws FileNotFoundException, IOException {
 
 		Properties pro = new Properties();
 		try {

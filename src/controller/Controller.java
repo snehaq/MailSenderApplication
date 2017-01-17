@@ -54,10 +54,10 @@ public class Controller extends HttpServlet {
 		System.out.println("in  get");
 		String mode = request.getParameter("mode");
 		HttpSession session1 = request.getSession(false);
-		if(session1!=null){
+		if (session1 != null) {
 			if (("sendMail").equals(mode)) {
 				try {
-					ReadPropertiesFile.readConfig(request, response);
+					ReadPropertiesFile.readConfig(request);
 				} catch (FileNotFoundException e) {
 					String errMsg = "FileNotFoundException.!!!";
 					RedirectToError.errorPage(request, response, errMsg);
@@ -90,28 +90,34 @@ public class Controller extends HttpServlet {
 				checkExpiry(request, response);
 			} else {
 				response.getWriter().append("CronJob Scheduled: ")
-				.append(request.getContextPath());
+						.append(request.getContextPath());
 				try {
 					CronJob.ScheduleCronJob(request, response);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		}else{
+		} else {
 			response.sendRedirect("./pages/Login.jsp");
 		}
 	}
-
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String mode = request.getParameter("mode");
-		HttpSession session1 = request.getSession(false);
-		if (("loginAuthentication").equals(mode)) {
-			loginAuthentication(request, response);
-		}
-		if(session1!=null){
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			if (("loginAuthentication").equals(mode)) {
+				loginAuthentication(request, response);
+			} else if ("recoveryEmail".equals(mode)) {
+				recoveryEmail(request, response);
+			} else if ("changePassword".equals(mode)) {
+				changePassword(request, response);
+			} else {
+				response.sendRedirect("./pages/Login.jsp");
+			}
+		} else {
 			if (("statusChange").equals(mode)) {
 				StatusChange(request, response);
 			} else if (("xlsUpload").equals(mode)) {
@@ -121,23 +127,15 @@ public class Controller extends HttpServlet {
 			} else if (("setCronJobTime").equals(mode)) {
 				setCronJobTime(request, response);
 			} else if (("setTemplatesInProperties").equals(mode)) {
-				System.out.println("in settemplate");
 				setTemplatesInProperties(request, response);
 			} else if (("mailLogSelectChange").equals(mode)) {
 				mailLogSelectChange(request, response);
-			}  else if ("recoveryEmail".equals(mode)) {
-				recoveryEmail(request, response);
-			} else if ("changePassword".equals(mode)) {
-				changePassword(request, response);
 			} else if ("logout".equals(mode)) {
-				System.out.println("in logout");
 				userLogout(request, response);
 			}
-		}else{
-			response.sendRedirect("./pages/Login.jsp");
 		}
-	}
 
+	}
 
 	private void checkExpiry(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -181,8 +179,6 @@ public class Controller extends HttpServlet {
 		}
 	}
 
-
-
 	private void changePassword(HttpServletRequest request,
 			HttpServletResponse response) {
 		String conf_pass = request.getParameter("conf_pass");
@@ -197,31 +193,44 @@ public class Controller extends HttpServlet {
 
 	public void recoveryEmail(HttpServletRequest request,
 			HttpServletResponse response) {
-		// SMTP server information
+		String mailTo = request.getParameter("email");
+		final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		String status = "false";
+
+		if (!mailTo.matches(EMAIL_PATTERN)) {
+			status = "false";
+
+		} else {
+			// SMTP server information
+
+			try {
+				ReadPropertiesFile.readConfig(request);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			SecurityManager s = new SecurityManager();
+			PasswordRecoveryMail mailer = new PasswordRecoveryMail();
+			try {
+
+				mailer.sendHtmlEmail(request);
+				status = "true";
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 		try {
-			ReadPropertiesFile.readConfig(request, response);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			response.getWriter().write(new Gson().toJson(status));
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		SecurityManager s = new SecurityManager();
-		PasswordRecoveryMail mailer = new PasswordRecoveryMail();
-		try {
-			String status = "true";
-
-			mailer.sendHtmlEmail(request, response);
-			response.getWriter().write(new Gson().toJson(status));
-			System.out.println("Email sent.");
-		} catch (Exception ex) {
-			System.out.println("Failed to sent email.");
-			ex.printStackTrace();
 		}
 	}
 
 	private void loginAuthentication(HttpServletRequest request,
 			HttpServletResponse response) {
-		System.out.println("in loginAuthentication");
 		String username = request.getParameter("username");
 		String password = request.getParameter("key");
 		ResultSet user = null;
@@ -291,6 +300,15 @@ public class Controller extends HttpServlet {
 
 	public void setTemplatesInProperties(HttpServletRequest request,
 			HttpServletResponse response) {
+		try {
+			ReadPropertiesFile.readConfig(request);
+		} catch (FileNotFoundException e1) {
+
+			e1.printStackTrace();
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
 
 		String[] selected_value = request.getParameterValues("templateImgs");
 
@@ -303,7 +321,7 @@ public class Controller extends HttpServlet {
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -335,7 +353,7 @@ public class Controller extends HttpServlet {
 			}
 		}
 		if (templateSelectedString == "") {
-			templateSelectedString = "template1,";
+			templateSelectedString = Constants.templates;
 
 		}
 		String path = request.getServletContext().getRealPath(File.separator)
@@ -388,7 +406,7 @@ public class Controller extends HttpServlet {
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 			imagePath = new ArrayList<String>();
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -402,7 +420,7 @@ public class Controller extends HttpServlet {
 				} else if (listOfFiles[i].isDirectory()) {
 				}
 			}
-			ReadPropertiesFile.readConfig(request, response);
+			ReadPropertiesFile.readConfig(request);
 			String[] templatesFromPropertiesFile = Constants.templates
 					.split(",");
 			ArrayList<String> templatesAlreadySet = new ArrayList<String>();
@@ -502,26 +520,35 @@ public class Controller extends HttpServlet {
 	public void StatusChange(HttpServletRequest request,
 			HttpServletResponse response) {
 		String status = request.getParameter("status");
+		if (status.equals("enable") || status.equals("disable")) {
 
-		String path = request.getServletContext().getRealPath(File.separator)
-				+ "MailSendingApplication.properties";
-		FileInputStream in = null;
+			String path = request.getServletContext().getRealPath(
+					File.separator)
+					+ "MailSendingApplication.properties";
+			FileInputStream in = null;
 
-		try {
-			in = new FileInputStream(path);
-			Properties props = new Properties();
-			props.load(in);
-			in.close();
-			FileOutputStream out = null;
-			out = new FileOutputStream(path);
-			props.setProperty("setStatus", status);
-			props.store(out, null);
-			out.close();
+			try {
+				in = new FileInputStream(path);
+				Properties props = new Properties();
+				props.load(in);
+				in.close();
+				FileOutputStream out = null;
+				out = new FileOutputStream(path);
+				props.setProperty("setStatus", status);
+				props.store(out, null);
+				out.close();
 
-		} catch (IOException e) {
-			String errMsg = "IOException..!!!";
-			RedirectToError.errorPage(request, response, errMsg);
+			} catch (IOException e) {
+				e.printStackTrace();
+				String errMsg = "IOException..!!!";
+				RedirectToError.errorPage(request, response, errMsg);
+				status = "error";
+			}
+
+		} else {
+
 			status = "error";
+
 		}
 		try {
 			response.getWriter().write(new Gson().toJson(status));

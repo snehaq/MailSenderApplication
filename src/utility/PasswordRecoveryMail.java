@@ -16,7 +16,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class PasswordRecoveryMail {
 	String host = "smtp.gmail.com";
@@ -24,9 +23,9 @@ public class PasswordRecoveryMail {
 	String mailFrom = Constants.setFrom;
 	String password = Constants.setPassword;
 
-	public void sendHtmlEmail(HttpServletRequest request,
-			HttpServletResponse response) throws AddressException,
-			MessagingException, FileNotFoundException, IOException {
+	public void sendHtmlEmail(HttpServletRequest request)
+			throws AddressException, MessagingException, FileNotFoundException,
+			IOException {
 
 		// sets SMTP server properties
 		Properties properties = new Properties();
@@ -50,7 +49,7 @@ public class PasswordRecoveryMail {
 		long millisecond = new Date().getTime();
 		String timestamp = String.valueOf(millisecond);
 		;
-		GenericUtility.changeTimeStamp(timestamp, request, response);
+		GenericUtility.changeTimeStamp(timestamp, request);
 
 		String mailTo = request.getParameter("email");
 		String subject = "Password Recovery";

@@ -51,19 +51,33 @@ $(document).ready(function(){
 			data: {email:email},
 
 			success: function (result) {
+				console.log("result  ",result);
 				var status=JSON.parse(result);
-				console.log("status  ",status);
+				var initialHtml=$('#modalContent').html();
 				if(status=="true")
 				{
 					$('#modalContent').html("");
-
 					var str="<div class='row' style='margin-top:15%'><div class='col-md-12'style='padding-left:27%;'><h4>Recovery Mail Sent Successfully</h4></div></div>"
 						$('#modalContent').append(str);
-
+					setTimeout(function(){
+						$("#modalContent").fadeOut("slow");
+						$(".modal-backdrop").fadeOut("slow");
+						$("#modalContent").html(initialHtml);
+					}, 3000);
+					
 				}
 				else
 				{
-
+					$('#modalContent').html("");
+					var str="<div class='row' style='margin-top:15%'><div class='col-md-12'style='padding-left:27%;'><h4>Mail delivery failed!!</h4></div></div>"
+						$('#modalContent').append(str);
+					setTimeout(function(){
+						$("#modalContent").fadeOut("slow");
+						$(".modal-backdrop").fadeOut("slow");
+						$("#modalContent").html(initialHtml);
+					}, 3000);
+					
+					
 				}
 
 			},error:function(){
