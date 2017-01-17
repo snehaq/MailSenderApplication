@@ -132,8 +132,6 @@ $(document).ready(function(){
 			success: function(data)
 			{
 				var result=JSON.parse(data);
-				console.log("template selected ",result[0]);
-				console.log("templates discarded",result[1]);
 				var str="";
 				var str1="";
 				for(var i=0;i<result[0].length;i++)
