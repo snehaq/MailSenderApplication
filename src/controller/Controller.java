@@ -51,54 +51,93 @@ public class Controller extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("in  get");
 		String mode = request.getParameter("mode");
-		if (("sendMail").equals(mode)) {
-			try {
-				ReadPropertiesFile.readConfig(request, response);
-			} catch (FileNotFoundException e) {
-				String errMsg = "FileNotFoundException.!!!";
-				RedirectToError.errorPage(request, response, errMsg);
-				e.printStackTrace();
-			} catch (IOException e) {
-				String errMsg = "IOException..!!";
-				RedirectToError.errorPage(request, response, errMsg);
-				e.printStackTrace();
-			}
-			if (Constants.setStatus.equals("enable")) {
+		HttpSession session1 = request.getSession(false);
+		if(session1!=null){
+			if (("sendMail").equals(mode)) {
 				try {
-					Main.dataForSendMail(request, UPLOAD_DIR_IMG, response);
+					ReadPropertiesFile.readConfig(request, response);
+				} catch (FileNotFoundException e) {
+					String errMsg = "FileNotFoundException.!!!";
+					RedirectToError.errorPage(request, response, errMsg);
+					e.printStackTrace();
+				} catch (IOException e) {
+					String errMsg = "IOException..!!";
+					RedirectToError.errorPage(request, response, errMsg);
+					e.printStackTrace();
+				}
+				if (Constants.setStatus.equals("enable")) {
+					try {
+						Main.dataForSendMail(request, UPLOAD_DIR_IMG, response);
 
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else if (Constants.setStatus.equals("disable")) {
+					System.out.println("Mail functionality disabled");
+				}
+			} else if (("updateCronJobTimeToRun").equals(mode)) {
+				try {
+					CronJob.unscheduleCronJob(request, response);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else if (Constants.setStatus.equals("disable")) {
-				System.out.println("Mail functionality disabled");
-			}
-		} else if (("updateCronJobTimeToRun").equals(mode)) {
-			try {
-				CronJob.unscheduleCronJob(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else if (("dashboard").equals(mode)) {
-			HttpSession session = request.getSession(false);
-			if (session != null) {
+			} else if (("dashboard").equals(mode)) {
 				redirectToMainPageWithData(request, response);
+
+			} else if (("checkExpiry").equals(mode)) {
+				checkExpiry(request, response);
 			} else {
-				response.sendRedirect("./pages/Login.jsp");
+				response.getWriter().append("CronJob Scheduled: ")
+				.append(request.getContextPath());
+				try {
+					CronJob.ScheduleCronJob(request, response);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		} else if (("checkExpiry").equals(mode)) {
-			checkExpiry(request, response);
-		} else {
-			response.getWriter().append("CronJob Scheduled: ")
-					.append(request.getContextPath());
-			try {
-				CronJob.ScheduleCronJob(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		}else{
+			response.sendRedirect("./pages/Login.jsp");
 		}
 	}
+
+
+	@Override
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String mode = request.getParameter("mode");
+		HttpSession session1 = request.getSession(false);
+		if (("loginAuthentication").equals(mode)) {
+			loginAuthentication(request, response);
+		}
+		if(session1!=null){
+			if (("statusChange").equals(mode)) {
+				StatusChange(request, response);
+			} else if (("xlsUpload").equals(mode)) {
+				uploadFile(request, response);
+			} else if (("imageUpload").equals(mode)) {
+				zipUpload(request, response);
+			} else if (("setCronJobTime").equals(mode)) {
+				setCronJobTime(request, response);
+			} else if (("setTemplatesInProperties").equals(mode)) {
+				System.out.println("in settemplate");
+				setTemplatesInProperties(request, response);
+			} else if (("mailLogSelectChange").equals(mode)) {
+				mailLogSelectChange(request, response);
+			}  else if ("recoveryEmail".equals(mode)) {
+				recoveryEmail(request, response);
+			} else if ("changePassword".equals(mode)) {
+				changePassword(request, response);
+			} else if ("logout".equals(mode)) {
+				System.out.println("in logout");
+				userLogout(request, response);
+			}
+		}else{
+			response.sendRedirect("./pages/Login.jsp");
+		}
+	}
+
 
 	private void checkExpiry(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -142,33 +181,7 @@ public class Controller extends HttpServlet {
 		}
 	}
 
-	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String mode = request.getParameter("mode");
-		if (("statusChange").equals(mode)) {
-			StatusChange(request, response);
-		} else if (("xlsUpload").equals(mode)) {
-			uploadFile(request, response);
-		} else if (("imageUpload").equals(mode)) {
-			zipUpload(request, response);
-		} else if (("setCronJobTime").equals(mode)) {
-			setCronJobTime(request, response);
-		} else if (("setTemplatesInProperties").equals(mode)) {
-			setTemplatesInProperties(request, response);
-		} else if (("mailLogSelectChange").equals(mode)) {
-			mailLogSelectChange(request, response);
-		} else if (("loginAuthentication").equals(mode)) {
-			loginAuthentication(request, response);
-		} else if ("recoveryEmail".equals(mode)) {
-			recoveryEmail(request, response);
-		} else if ("changePassword".equals(mode)) {
-			changePassword(request, response);
-		} else if ("logout".equals(mode)) {
-			System.out.println("in logout");
-			userLogout(request, response);
-		}
-	}
+
 
 	private void changePassword(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -290,7 +303,7 @@ public class Controller extends HttpServlet {
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -375,7 +388,7 @@ public class Controller extends HttpServlet {
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 			imagePath = new ArrayList<String>();
 			for (int i = 0; i < listOfFiles.length; i++) {
