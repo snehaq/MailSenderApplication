@@ -5,10 +5,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<%@ page session="false" %>
+<%@ page session="false"%>
 <script
 	src="${pageContext.request.contextPath}/javascripts/jquery.min.js"
 	type="text/javascript"></script>
+<script
+	src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
 <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 <link rel="stylesheet"
 	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -49,9 +51,13 @@
 			<div class="col-md-6" id="headingDiv">
 				<h1 style="color: #404040;">Email Generator</h1>
 			</div>
-			<form action="${pageContext.request.contextPath}/controller?mode=logout" name="logout" id="logout" method="post">
-				<div class="col-md-3">	<input type="submit" id="logOutBtn"
-						class="btn btn-default logOutBtn" value="logout" /></div>
+			<form
+				action="${pageContext.request.contextPath}/controller?mode=logout"
+				name="logout" id="logout" method="post">
+				<div class="col-md-3">
+					<input type="submit" id="logOutBtn"
+						class="btn btn-default logOutBtn" value="logout" />
+				</div>
 			</form>
 		</div>
 		<form enctype="multipart/form-data" name="uploadXlsFileForm"
@@ -59,10 +65,10 @@
 			<div class="row" id="uploadFileUi" style="background-color: #f7f7f7;">
 				<div class="col-md-2"></div>
 				<div class="col-md-10" style="margin-top: 20px;">
-					<input id="selectFile" placeholder="Choose File"
-						disabled="disabled" class="selectFileTBoxes" name="selectFile"/>
+					<input  type="text"  id="selectFile" placeholder="Choose File"
+						disabled="disabled" class="selectFileTBoxes" name="selectFile" />
 					<div class="fileUpload btn btn-primary">
-						<span>Select File</span> <input id="selectFileBtn" type="file"
+						<span>Select File</span> <input id="selectFile_replacer" type="file"
 							class="upload" name="fname" />
 					</div>
 					<!-- <button type="Submit" id="uploadBtn" class="btn btn-default">Upload</button> -->
@@ -95,10 +101,10 @@
 			<div class="row" id="uploadZipUi" style="background-color: #f7f7f7;">
 				<div class="col-md-2"></div>
 				<div class="col-md-10" style="margin-top: 20px;">
-					<input id="selectZip" placeholder="Choose File" disabled="disabled"
+					<input type="text" id="selectZip" placeholder="Choose File" disabled="disabled"
 						class="selectFileTBoxes" />
 					<div class="fileUpload btn btn-primary">
-						<span>Select File</span> <input id="selectZipBtn" type="file"
+						<span>Select File</span> <input id="selectZip_replacer" type="file"
 							class="uploadZip" name="fname" />
 					</div>
 					<!-- <button type="Submit" id="uploadBtn" class="btn btn-default">Upload</button> -->
@@ -118,7 +124,7 @@
 				<div class="col-md-2"></div>
 				<div class="col-md-10">
 					<h4 id="imageFileMessage"
-						style="margin-top: 10px; color:#49b6a9; margin-left: 30px;">
+						style="margin-top: 10px; color: #49b6a9; margin-left: 30px;">
 					</h4>
 				</div>
 			</div>
@@ -188,13 +194,11 @@
 					scheduler time</h4>
 			</div>
 		</div>
-		<div class="row" 
-			style="background-color: #f7f7f7;">
-			<div class="col-md-3">
-			</div>
+		<div class="row" style="background-color: #f7f7f7;">
+			<div class="col-md-3"></div>
 			<div class="col-md-7" id="status_timeMsg"></div>
-			</div>
-		
+		</div>
+
 		<div class="row" id="selectTemplatesLabel"
 			style="background-color: #f7f7f7; margin-top: 20px;">
 			<div class="col-md-3"></div>
@@ -282,10 +286,10 @@
 						style="color: #fff; width: 200px; height: 50px; background-color: #49b6a9;"
 						id="setTemplateSubmit" />
 				</div>
-			</div> 
-			<div class="row" style="background-color: #f7f7f7; ">
-			<div class="col-md-2"></div>
-			<div class="col-md-10" id="selectTemplateMsg"></div>
+			</div>
+			<div class="row" style="background-color: #f7f7f7;">
+				<div class="col-md-2"></div>
+				<div class="col-md-10" id="selectTemplateMsg"></div>
 			</div>
 		</form>
 

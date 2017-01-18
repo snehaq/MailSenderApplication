@@ -1,12 +1,34 @@
 $(document).ready(function(){
-	
-		
-	
+	$('#uploadBtn').attr('disabled','disabled');
+	$('#uploadZipBtn').attr('disabled','disabled');
+
+	$('#selectFile_replacer').change(function(){
+		if($('#selectFile_replacer').val() == ""){ 
+			$('#uploadBtn').attr('disabled','disabled');
+		}else{ 
+			$('#uploadBtn').removeAttr("disabled");
+		}                             
+	});
+	$('#selectZip_replacer').change(function(){
+		console.log("dvhsvchd");
+		if($('#selectZip_replacer').val() == ""){ 
+			console.log("in if",$('#selectZip_replacer').val() == null);
+			$('#uploadZipBtn').attr('disabled','disabled');
+		}else{ 
+			console.log("in else");
+			$('#uploadZipBtn').removeAttr("disabled");
+		}                             
+	});
+
+	//Trigger change function once to check if the form is validated on page load
+	$('input:first').trigger('change');
+
+
 	$('#uploadFileMsg').hide();
-	document.getElementById("selectFileBtn").onchange = function () {
+	document.getElementById("selectFile_replacer").onchange = function () {
 		document.getElementById("selectFile").value = this.value;
 	};
-	document.getElementById("selectZipBtn").onchange = function () {
+	document.getElementById("selectZip_replacer").onchange = function () {
 		document.getElementById("selectZip").value = this.value;
 	};
 	$('input[type="radio"]').on('change', function(e) {
@@ -23,13 +45,13 @@ $(document).ready(function(){
 				var result=JSON.parse(data);
 				var Msg="";
 				if(result!="error")
-					{
+				{
 					str="<h3 style='color:#49b6a9;margin:0'> Status Changed to "+result+"</h3>";
-					}
+				}
 				else
-					{
+				{
 					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
-					}
+				}
 				$("#status_timeMsg").html("");
 				$("#status_timeMsg").append(str);
 				$("#status_timeMsg").show();
@@ -42,23 +64,23 @@ $(document).ready(function(){
 	});
 	var _validFileExtensions = [".xls"];    
 	function Validate(fileNamePath) {
-	            var sFileName = fileNamePath;
-	            if (sFileName.length > 0) {
-	                var blnValid = false;
-	                    var sCurExtension = _validFileExtensions;
-	                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
-	                        blnValid = true;
-	                    }
-	                if (!blnValid) {
-	                    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
-	                    return false;
-	                }
-	            }
-	        
-	    return true;
+		var sFileName = fileNamePath;
+		if (sFileName.length > 0) {
+			var blnValid = false;
+			var sCurExtension = _validFileExtensions;
+			if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+				blnValid = true;
+			}
+			if (!blnValid) {
+				alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+				return false;
+			}
+		}
+
+		return true;
 	}
 	$('#xlsUploadForm').on('submit', function (e) {
-		
+
 		var form = $(this)[0]; 
 		var formData = new FormData(form);
 		$.ajax({
@@ -71,6 +93,8 @@ $(document).ready(function(){
 				var status=JSON.parse(result);
 				if(status=="success")
 				{
+					$("#selectFile").val("");
+					$("#uploadBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
 				else
@@ -93,7 +117,7 @@ $(document).ready(function(){
 	$('#imageUploadForm').on('submit', function (e) {
 		var form = $(this)[0]; 
 		var formData = new FormData(form);
-		
+
 		$.ajax({
 			type: 'post',
 			url: '/MailSendingApplication/controller?mode=imageUpload',
@@ -103,6 +127,8 @@ $(document).ready(function(){
 			success: function (result) {
 				var status=JSON.parse(result);
 				if(status=="success"){
+					$("#selectZip").val("");
+					$("#uploadZipBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
 				else if(status=="formatError"){
@@ -110,10 +136,10 @@ $(document).ready(function(){
 				}
 				else if(status=="extensionError"){
 					var str="UPLOAD FAILED note:Only .zip , .jpg files allowed";
-					
+
 				}else{
 					var str="Something went wrong!";
-					}
+				}
 				$('#imageFileMessage').html("");
 				$('#imageFileMessage').append(str);
 				$('#imageFileMessage').show();
@@ -138,22 +164,22 @@ $(document).ready(function(){
 				var result=JSON.parse(data);
 				var Msg="";
 				if(result=="error")
-					{
+				{
 					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
-					
-					}
+
+				}
 				else
-					{
+				{
 					str="<h3 style='color:#49b6a9;margin:0'> Cron Time Changed to "+result+"</h3>";
-					}
+				}
 				$("#status_timeMsg").html("");
 				$("#status_timeMsg").append(str);
 				$("#status_timeMsg").show();
 				setTimeout(function(){
 					$("#status_timeMsg").fadeOut("slow");
 				}, 3000);
-				
-				
+
+
 
 			}
 		});
