@@ -101,13 +101,14 @@ $(document).ready(function(){
 			success: function (data) {
 				var result=JSON.parse(data);
 				var Msg="";
-				if(result!="error")
+				if(result=="error")
 					{
-					str="<h3 style='color:#49b6a9;margin:0'> Cron Time Changed to "+result+"</h3>";
+					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
+					
 					}
 				else
 					{
-					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
+					str="<h3 style='color:#49b6a9;margin:0'> Cron Time Changed to "+result+"</h3>";
 					}
 				$("#status_timeMsg").html("");
 				$("#status_timeMsg").append(str);

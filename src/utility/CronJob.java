@@ -45,7 +45,7 @@ public class CronJob implements Job {
 			JobDetail jobDetail = new JobDetail("MailSend", "Job1",
 					CronJob.class);
 
-			ReadPropertiesFile.readConfig(req, res);
+			ReadPropertiesFile.readConfig(req);
 
 			CronTrigger trigger = new CronTrigger("sendMailJob",
 					"triggerGroup1");

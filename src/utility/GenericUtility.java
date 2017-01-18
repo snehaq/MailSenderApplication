@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 public class GenericUtility {
@@ -352,24 +353,25 @@ public class GenericUtility {
 
 	public static void callupdateCronJobTime(HttpServletRequest req,
 			HttpServletResponse res) throws IOException {
+		
 		String url = req.getRequestURL().toString()
 				+ "?mode=updateCronJobTimeToRun";
-		hitUrl(url);
+		hitUrl(url,req.getSession(false).getId());
 	}
 
 	public static void callGetForMail(String req) throws IOException {
 		String url = req + "?mode=sendMail";
-		hitUrl(url);
+		
+		hitUrl(url,null);
 	}
 
 	public static void callGetOfController(HttpServletRequest req,
 			HttpServletResponse res) throws IOException {
 		String url = req.getRequestURL().toString();
-		hitUrl(url);
-
+		hitUrl(url,req.getSession(false).getId());
 	}
 
-	public static void hitUrl(String url) throws IOException {
+	public static void hitUrl(String url,String sessionId) throws IOException {
 
 		final String USER_AGENT = "Mozilla/5.0";
 
@@ -381,6 +383,8 @@ public class GenericUtility {
 
 		// add request header
 		con.setRequestProperty("User-Agent", USER_AGENT);
+		con.setRequestProperty(
+			    "Cookie","JSESSIONID=" + sessionId);
 
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);
@@ -466,6 +470,26 @@ public class GenericUtility {
 		rs = pstm.executeQuery();
 		return rs;
 
+	}
+
+	public static boolean validateTimeToRun(String hours, String minutes, String am_pm) {
+		if(hours.matches("\\d+")==false||minutes.matches("\\d+")==false||am_pm.matches("[0-9]")==true)
+		{
+			return false;
+		}
+		else
+		{
+			int hoursToInt=Integer.parseInt(hours);
+			int minutesToInt=Integer.parseInt(minutes);
+			if(hoursToInt>=1&&hoursToInt<=12&&minutesToInt>=0&&(am_pm.equals("AM")||am_pm.equals("PM"))){
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
 	}
 
 }

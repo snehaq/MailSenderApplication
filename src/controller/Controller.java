@@ -51,10 +51,31 @@ public class Controller extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("in  get");
 		String mode = request.getParameter("mode");
 		HttpSession session1 = request.getSession(false);
 		if (session1 != null) {
+			if (("updateCronJobTimeToRun").equals(mode)) {
+				System.out.println("in updateCronJobTimeToRun mode");
+				try {
+					CronJob.unscheduleCronJob(request, response);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (("dashboard").equals(mode)) {
+				redirectToMainPageWithData(request, response);
+
+			} else if (("checkExpiry").equals(mode)) {
+				checkExpiry(request, response);
+			} else {
+				response.getWriter().append("CronJob Scheduled: ")
+						.append(request.getContextPath());
+				try {
+					CronJob.ScheduleCronJob(request, response);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
 			if (("sendMail").equals(mode)) {
 				try {
 					ReadPropertiesFile.readConfig(request);
@@ -77,27 +98,7 @@ public class Controller extends HttpServlet {
 				} else if (Constants.setStatus.equals("disable")) {
 					System.out.println("Mail functionality disabled");
 				}
-			} else if (("updateCronJobTimeToRun").equals(mode)) {
-				try {
-					CronJob.unscheduleCronJob(request, response);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else if (("dashboard").equals(mode)) {
-				redirectToMainPageWithData(request, response);
-
-			} else if (("checkExpiry").equals(mode)) {
-				checkExpiry(request, response);
-			} else {
-				response.getWriter().append("CronJob Scheduled: ")
-						.append(request.getContextPath());
-				try {
-					CronJob.ScheduleCronJob(request, response);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
+			} else 
 			response.sendRedirect("./pages/Login.jsp");
 		}
 	}
@@ -202,8 +203,6 @@ public class Controller extends HttpServlet {
 			status = "false";
 
 		} else {
-			// SMTP server information
-
 			try {
 				ReadPropertiesFile.readConfig(request);
 			} catch (FileNotFoundException e) {
@@ -214,7 +213,6 @@ public class Controller extends HttpServlet {
 			SecurityManager s = new SecurityManager();
 			PasswordRecoveryMail mailer = new PasswordRecoveryMail();
 			try {
-
 				mailer.sendHtmlEmail(request);
 				status = "true";
 
@@ -260,9 +258,8 @@ public class Controller extends HttpServlet {
 
 	public void userLogout(HttpServletRequest request,
 			HttpServletResponse response) {
-		// check for an existing session and invalidate it if exists
 		HttpSession session = request.getSession(false);
-
+		
 		if (session != null) {
 			session.invalidate();
 			try {
@@ -507,7 +504,7 @@ public class Controller extends HttpServlet {
 				part.write(uploadFilePath + File.separator + fileName);
 				AddXlsToDb.insertData(fileName, uploadFilePath, request,
 						response);
-				String msg = "success!";
+				String msg = "success";
 				response.getWriter().write(new Gson().toJson(msg));
 			}
 		} catch (IllegalStateException | IOException | ServletException e) {
@@ -562,6 +559,18 @@ public class Controller extends HttpServlet {
 		String hours = request.getParameter("hours");
 		String minutes = request.getParameter("minutes");
 		String am_pm = request.getParameter("am/pm");
+		boolean validationCheck=GenericUtility.validateTimeToRun(hours,minutes,am_pm);
+		if(!validationCheck){
+			try {
+				String status="error";
+				response.getWriter().write(new Gson().toJson(status));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		else
+		{
 		String timeToRun = hours + ":" + minutes + " " + am_pm;
 		String path = request.getServletContext().getRealPath(File.separator)
 				+ "MailSendingApplication.properties";
@@ -594,6 +603,7 @@ public class Controller extends HttpServlet {
 		}
 		props.setProperty("timeToRun", timeToRun);
 		try {
+			HttpSession session=request.getSession(false);
 			props.store(out, null);
 			out.close();
 			GenericUtility.callupdateCronJobTime(request, response);
@@ -602,10 +612,12 @@ public class Controller extends HttpServlet {
 			RedirectToError.errorPage(request, response, errMsg);
 			e.printStackTrace();
 		}
+		
 		try {
 			response.getWriter().write(new Gson().toJson(timeToRun));
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
 		}
 	}
 }

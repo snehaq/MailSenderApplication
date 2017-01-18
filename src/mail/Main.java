@@ -147,7 +147,7 @@ public class Main {
 	public static String CreateTemplate(HashMap employeeData,
 			HttpServletRequest request) throws Exception {
 
-		ReadPropertiesFile.readConfig(request, null);
+		ReadPropertiesFile.readConfig(request);
 		String emailBody = "";
 		String[] templates = Constants.templates.split(",");
 
@@ -171,7 +171,7 @@ public class Main {
 		ArrayList<String> AllEmails = new ArrayList<String>();
 		String id = "";
 
-		ReadPropertiesFile.readConfig(request, response);
+		ReadPropertiesFile.readConfig(request);
 
 		getEmpWithBday(EmpWithBirthDaysList, AllEmails, request, response);
 
