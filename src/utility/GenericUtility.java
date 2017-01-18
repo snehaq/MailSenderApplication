@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 public class GenericUtility {
@@ -353,25 +352,25 @@ public class GenericUtility {
 
 	public static void callupdateCronJobTime(HttpServletRequest req,
 			HttpServletResponse res) throws IOException {
-		
+
 		String url = req.getRequestURL().toString()
 				+ "?mode=updateCronJobTimeToRun";
-		hitUrl(url,req.getSession(false).getId());
+		hitUrl(url, req.getSession(false).getId());
 	}
 
 	public static void callGetForMail(String req) throws IOException {
 		String url = req + "?mode=sendMail";
-		
-		hitUrl(url,null);
+
+		hitUrl(url, null);
 	}
 
 	public static void callGetOfController(HttpServletRequest req,
 			HttpServletResponse res) throws IOException {
 		String url = req.getRequestURL().toString();
-		hitUrl(url,req.getSession(false).getId());
+		hitUrl(url, req.getSession(false).getId());
 	}
 
-	public static void hitUrl(String url,String sessionId) throws IOException {
+	public static void hitUrl(String url, String sessionId) throws IOException {
 
 		final String USER_AGENT = "Mozilla/5.0";
 
@@ -383,8 +382,7 @@ public class GenericUtility {
 
 		// add request header
 		con.setRequestProperty("User-Agent", USER_AGENT);
-		con.setRequestProperty(
-			    "Cookie","JSESSIONID=" + sessionId);
+		con.setRequestProperty("Cookie", "JSESSIONID=" + sessionId);
 
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'GET' request to URL : " + url);
@@ -472,24 +470,45 @@ public class GenericUtility {
 
 	}
 
-	public static boolean validateTimeToRun(String hours, String minutes, String am_pm) {
-		if(hours.matches("\\d+")==false||minutes.matches("\\d+")==false||am_pm.matches("[0-9]")==true)
-		{
+	public static boolean validateTimeToRun(String hours, String minutes,
+			String am_pm) {
+		if (hours.matches("\\d+") == false || minutes.matches("\\d+") == false
+				|| am_pm.matches("[0-9]") == true) {
 			return false;
-		}
-		else
-		{
-			int hoursToInt=Integer.parseInt(hours);
-			int minutesToInt=Integer.parseInt(minutes);
-			if(hoursToInt>=1&&hoursToInt<=12&&minutesToInt>=0&&(am_pm.equals("AM")||am_pm.equals("PM"))){
+		} else {
+			int hoursToInt = Integer.parseInt(hours);
+			int minutesToInt = Integer.parseInt(minutes);
+			if (hoursToInt >= 1 && hoursToInt <= 12 && minutesToInt >= 0
+					&& (am_pm.equals("AM") || am_pm.equals("PM"))) {
 				return true;
-			}
-			else
-			{
+			} else {
 				return false;
 			}
 		}
-		
+
+	}
+
+	public static boolean checkExtension(Part part) {
+		String filename = "", fileExtension = "";
+		filename = getFileName(part);
+		fileExtension = filename.split("\\.")[1];
+		if (fileExtension.equals("xls")) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public static boolean checkZipExtension(Part part) {
+		String filename = "", fileExtension = "";
+		filename = getFileName(part);
+		fileExtension = filename.split("\\.")[1];
+		if (fileExtension.equals("zip") || fileExtension.equals("jpg")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

@@ -98,8 +98,8 @@ public class Controller extends HttpServlet {
 				} else if (Constants.setStatus.equals("disable")) {
 					System.out.println("Mail functionality disabled");
 				}
-			} else 
-			response.sendRedirect("./pages/Login.jsp");
+			} else
+				response.sendRedirect("./pages/Login.jsp");
 		}
 	}
 
@@ -259,7 +259,7 @@ public class Controller extends HttpServlet {
 	public void userLogout(HttpServletRequest request,
 			HttpServletResponse response) {
 		HttpSession session = request.getSession(false);
-		
+
 		if (session != null) {
 			session.invalidate();
 			try {
@@ -455,63 +455,107 @@ public class Controller extends HttpServlet {
 		String uploadFilePath = applicationPath + File.separator
 				+ UPLOAD_DIR_IMG;
 		String fileName = null;
+		String msg = "";
+		boolean status = false;
 		File fileSaveDir = new File(uploadFilePath);
 		if (!fileSaveDir.exists()) {
 			fileSaveDir.mkdirs();
 		}
 		try {
 			for (Part part : request.getParts()) {
-				fileName = GenericUtility.getFileName(part);
-				part.write(uploadFilePath + File.separator + fileName);
+				status = GenericUtility.checkZipExtension(part);
 			}
-			if (fileName.split("\\.")[1].equals("zip")) {
-				UnzipImages.unzipFile(request, fileName, uploadFilePath);
-				File file = new File(uploadFilePath + File.separator + fileName);
-				if (file.delete()) {
-					System.out.println(file.getName() + " is deleted!");
-				} else {
-					System.out.println("Delete operation is failed.");
-				}
-			} else {
+		} catch (IllegalStateException e1) {
+			e1.printStackTrace();
+		} catch (ServletException e1) {
+			e1.printStackTrace();
+		}
+		if (status) {
+			try {
 				for (Part part : request.getParts()) {
 					fileName = GenericUtility.getFileName(part);
-					part.write(uploadFilePath + File.separator + fileName);
+					if (fileName.split("\\.")[1].equals("zip")) {
+						part.write(uploadFilePath + File.separator + fileName);
+						UnzipImages
+								.unzipFile(request, fileName, uploadFilePath);
+						File file = new File(uploadFilePath + File.separator
+								+ fileName);
+						if (file.delete()) {
+							msg = "success";
+							System.out.println(file.getName() + " is deleted!");
+						} else {
+							System.out.println("Delete operation is failed.");
+						}
+					} else {
+						if (fileName.split("\\.")[0].matches("\\d{4}")) {
+							part.write(uploadFilePath + File.separator
+									+ fileName);
+							msg = "success";
+						} else {
+							msg = "formatError";
+						}
+
+					}
 				}
+
 			}
-			String msg = "success";
-			response.getWriter().write(new Gson().toJson(msg));
-		} catch (IllegalStateException | IOException | ServletException e) {
-			String msg = e.getMessage();
-			response.getWriter().write(new Gson().toJson(msg));
-			e.printStackTrace();
+
+			catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (ServletException e) {
+				e.printStackTrace();
+			}
+		} else {
+			msg = "extensionError";
 		}
+
+		response.getWriter().write(new Gson().toJson(msg));
+
 	}
 
 	public void uploadFile(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
+
 		String applicationPath = request.getServletContext().getRealPath("");
 		String uploadFilePath = applicationPath + File.separator + UPLOAD_DIR;
+		boolean status = false;
+		String msg = "";
 		File fileSaveDir = new File(uploadFilePath);
 		if (!fileSaveDir.exists()) {
 			fileSaveDir.mkdirs();
 		}
 		String fileName = null;
-
 		try {
 			for (Part part : request.getParts()) {
-				fileName = GenericUtility.getFileName(part);
-
-				part.write(uploadFilePath + File.separator + fileName);
-				AddXlsToDb.insertData(fileName, uploadFilePath, request,
-						response);
-				String msg = "success";
-				response.getWriter().write(new Gson().toJson(msg));
+				status = GenericUtility.checkExtension(part);
 			}
-		} catch (IllegalStateException | IOException | ServletException e) {
-			String msg = "exception";
-			response.getWriter().write(new Gson().toJson(msg));
-			e.printStackTrace();
+		} catch (IllegalStateException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ServletException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		if (status) {
+			try {
+				for (Part part : request.getParts()) {
+					fileName = GenericUtility.getFileName(part);
+
+					part.write(uploadFilePath + File.separator + fileName);
+					AddXlsToDb.insertData(fileName, uploadFilePath, request,
+							response);
+
+					msg = "success";
+				}
+			} catch (IllegalStateException | IOException | ServletException e) {
+				msg = "exception";
+
+				e.printStackTrace();
+			}
+		} else {
+			msg = "error";
+		}
+		response.getWriter().write(new Gson().toJson(msg));
 	}
 
 	public void StatusChange(HttpServletRequest request,
@@ -559,65 +603,65 @@ public class Controller extends HttpServlet {
 		String hours = request.getParameter("hours");
 		String minutes = request.getParameter("minutes");
 		String am_pm = request.getParameter("am/pm");
-		boolean validationCheck=GenericUtility.validateTimeToRun(hours,minutes,am_pm);
-		if(!validationCheck){
+		boolean validationCheck = GenericUtility.validateTimeToRun(hours,
+				minutes, am_pm);
+		if (!validationCheck) {
 			try {
-				String status="error";
+				String status = "error";
 				response.getWriter().write(new Gson().toJson(status));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-		}
-		else
-		{
-		String timeToRun = hours + ":" + minutes + " " + am_pm;
-		String path = request.getServletContext().getRealPath(File.separator)
-				+ "MailSendingApplication.properties";
-		FileInputStream in = null;
-		try {
-			in = new FileInputStream(path);
-		} catch (FileNotFoundException e) {
-			String errMsg = "FileNotFoundException..!!!";
 
-			RedirectToError.errorPage(request, response, errMsg);
-			e.printStackTrace();
-		}
-		Properties props = new Properties();
-		try {
-			props.load(in);
-			in.close();
-		} catch (IOException e) {
-			String errMsg = "IOException..!!!";
-			RedirectToError.errorPage(request, response, errMsg);
-			e.printStackTrace();
-		}
-		FileOutputStream out = null;
-		try {
-			out = new FileOutputStream(path);
-		} catch (FileNotFoundException e) {
-			String errMsg = "FileNotFoundException..!!!";
+		} else {
+			String timeToRun = hours + ":" + minutes + " " + am_pm;
+			String path = request.getServletContext().getRealPath(
+					File.separator)
+					+ "MailSendingApplication.properties";
+			FileInputStream in = null;
+			try {
+				in = new FileInputStream(path);
+			} catch (FileNotFoundException e) {
+				String errMsg = "FileNotFoundException..!!!";
 
-			RedirectToError.errorPage(request, response, errMsg);
-			e.printStackTrace();
-		}
-		props.setProperty("timeToRun", timeToRun);
-		try {
-			HttpSession session=request.getSession(false);
-			props.store(out, null);
-			out.close();
-			GenericUtility.callupdateCronJobTime(request, response);
-		} catch (IOException e) {
-			String errMsg = "IOException..!!!";
-			RedirectToError.errorPage(request, response, errMsg);
-			e.printStackTrace();
-		}
-		
-		try {
-			response.getWriter().write(new Gson().toJson(timeToRun));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+				RedirectToError.errorPage(request, response, errMsg);
+				e.printStackTrace();
+			}
+			Properties props = new Properties();
+			try {
+				props.load(in);
+				in.close();
+			} catch (IOException e) {
+				String errMsg = "IOException..!!!";
+				RedirectToError.errorPage(request, response, errMsg);
+				e.printStackTrace();
+			}
+			FileOutputStream out = null;
+			try {
+				out = new FileOutputStream(path);
+			} catch (FileNotFoundException e) {
+				String errMsg = "FileNotFoundException..!!!";
+
+				RedirectToError.errorPage(request, response, errMsg);
+				e.printStackTrace();
+			}
+			props.setProperty("timeToRun", timeToRun);
+			try {
+				HttpSession session = request.getSession(false);
+				props.store(out, null);
+				out.close();
+				GenericUtility.callupdateCronJobTime(request, response);
+			} catch (IOException e) {
+				String errMsg = "IOException..!!!";
+				RedirectToError.errorPage(request, response, errMsg);
+				e.printStackTrace();
+			}
+
+			try {
+				response.getWriter().write(new Gson().toJson(timeToRun));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

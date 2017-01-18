@@ -60,7 +60,7 @@
 				<div class="col-md-2"></div>
 				<div class="col-md-10" style="margin-top: 20px;">
 					<input id="selectFile" placeholder="Choose File"
-						disabled="disabled" class="selectFileTBoxes" />
+						disabled="disabled" class="selectFileTBoxes" name="selectFile"/>
 					<div class="fileUpload btn btn-primary">
 						<span>Select File</span> <input id="selectFileBtn" type="file"
 							class="upload" name="fname" />

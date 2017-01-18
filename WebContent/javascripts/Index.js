@@ -1,4 +1,7 @@
 $(document).ready(function(){
+	
+		
+	
 	$('#uploadFileMsg').hide();
 	document.getElementById("selectFileBtn").onchange = function () {
 		document.getElementById("selectFile").value = this.value;
@@ -37,13 +40,31 @@ $(document).ready(function(){
 		});
 
 	});
+	var _validFileExtensions = [".xls"];    
+	function Validate(fileNamePath) {
+	            var sFileName = fileNamePath;
+	            if (sFileName.length > 0) {
+	                var blnValid = false;
+	                    var sCurExtension = _validFileExtensions;
+	                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+	                        blnValid = true;
+	                    }
+	                if (!blnValid) {
+	                    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+	                    return false;
+	                }
+	            }
+	        
+	    return true;
+	}
 	$('#xlsUploadForm').on('submit', function (e) {
+		
 		var form = $(this)[0]; 
 		var formData = new FormData(form);
 		$.ajax({
 			type: 'post',
 			url: '/MailSendingApplication/controller?mode=xlsUpload',
-			data: formData,
+			data:	formData,
 			contentType: false,
 			processData: false,
 			success: function (result) {
@@ -54,8 +75,9 @@ $(document).ready(function(){
 				}
 				else
 				{
-					var str="Something went wrong!";
+					var str="Something went wrong!! Note:check file extension";
 				}
+				$('#uploadFileMessage').html("");
 				$('#uploadFileMessage').append(str);
 				$('#uploadFileMsg').show();
 				setTimeout(function(){
@@ -71,18 +93,32 @@ $(document).ready(function(){
 	$('#imageUploadForm').on('submit', function (e) {
 		var form = $(this)[0]; 
 		var formData = new FormData(form);
+		
 		$.ajax({
 			type: 'post',
 			url: '/MailSendingApplication/controller?mode=imageUpload',
 			data: formData,
 			contentType: false,
 			processData: false,
-			success: function () {
-				var str="File successfully uploaded!";
-				$('#imageFileMsg').show();
+			success: function (result) {
+				var status=JSON.parse(result);
+				if(status=="success"){
+					var str="File successfully uploaded!";
+				}
+				else if(status=="formatError"){
+					var str="File format incorrect.";
+				}
+				else if(status=="extensionError"){
+					var str="UPLOAD FAILED note:Only .zip , .jpg files allowed";
+					
+				}else{
+					var str="Something went wrong!";
+					}
+				$('#imageFileMessage').html("");
 				$('#imageFileMessage').append(str);
+				$('#imageFileMessage').show();
 				setTimeout(function(){
-					$("#imageFileMsg").fadeOut("slow");
+					$("#imageFileMessage").fadeOut("slow");
 				}, 3000);
 			}
 		});
