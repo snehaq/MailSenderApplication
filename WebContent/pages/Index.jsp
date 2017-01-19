@@ -157,7 +157,7 @@
 				<div class="col-md-1" style="margin-top: 15px;">
 					<select class="selectpicker" id="minutes" name="minutes">
 						<%
-							for (int i = 0; i <= 60; i++) {
+							for (int i = 0; i < 60; i++) {
 									if (i < 10) {
 						%><option>0<%=i%></option>
 						<%
