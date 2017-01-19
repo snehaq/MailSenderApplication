@@ -10,12 +10,9 @@ $(document).ready(function(){
 		}                             
 	});
 	$('#selectZip_replacer').change(function(){
-		console.log("dvhsvchd");
 		if($('#selectZip_replacer').val() == ""){ 
-			console.log("in if",$('#selectZip_replacer').val() == null);
 			$('#uploadZipBtn').attr('disabled','disabled');
 		}else{ 
-			console.log("in else");
 			$('#uploadZipBtn').removeAttr("disabled");
 		}                             
 	});
@@ -93,7 +90,7 @@ $(document).ready(function(){
 				var status=JSON.parse(result);
 				if(status=="success")
 				{
-					$("#selectFile").val("");
+					$("#selectFile_replacer").val("");
 					$("#uploadBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
@@ -127,7 +124,7 @@ $(document).ready(function(){
 			success: function (result) {
 				var status=JSON.parse(result);
 				if(status=="success"){
-					$("#selectZip").val("");
+					$("#selectZip_replacer").val("");
 					$("#uploadZipBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
