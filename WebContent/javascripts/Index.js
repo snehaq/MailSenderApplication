@@ -16,17 +16,17 @@ $(document).ready(function(){
 			$('#uploadZipBtn').removeAttr("disabled");
 		}                             
 	});
-
-	//Trigger change function once to check if the form is validated on page load
-	$('input:first').trigger('change');
-
-
 	$('#uploadFileMsg').hide();
 	document.getElementById("selectFile_replacer").onchange = function () {
-		document.getElementById("selectFile").value = this.value;
+		var filePath=document.getElementById("selectFile_replacer").value;
+		var fileName = filePath.substring(filePath.lastIndexOf("\\")+1,filePath.length);
+		 $("#selectFile").val(fileName);
+		 
 	};
 	document.getElementById("selectZip_replacer").onchange = function () {
-		document.getElementById("selectZip").value = this.value;
+		var filePath=document.getElementById("selectZip_replacer").value;
+		var fileName = filePath.substring(filePath.lastIndexOf("\\")+1,filePath.length);
+		 $("#selectZip").val(fileName);
 	};
 	$('input[type="radio"]').on('change', function(e) {
 		var status=$(this).val();
@@ -41,12 +41,10 @@ $(document).ready(function(){
 			success: function(data){
 				var result=JSON.parse(data);
 				var Msg="";
-				if(result!="error")
-				{
+				if(result!="error"){
 					str="<h3 style='color:#49b6a9;margin:0'> Status Changed to "+result+"</h3>";
 				}
-				else
-				{
+				else{
 					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
 				}
 				$("#status_timeMsg").html("");
@@ -59,23 +57,6 @@ $(document).ready(function(){
 		});
 
 	});
-	var _validFileExtensions = [".xls"];    
-	function Validate(fileNamePath) {
-		var sFileName = fileNamePath;
-		if (sFileName.length > 0) {
-			var blnValid = false;
-			var sCurExtension = _validFileExtensions;
-			if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
-				blnValid = true;
-			}
-			if (!blnValid) {
-				alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
-				return false;
-			}
-		}
-
-		return true;
-	}
 	$('#xlsUploadForm').on('submit', function (e) {
 
 		var form = $(this)[0]; 
@@ -88,14 +69,13 @@ $(document).ready(function(){
 			processData: false,
 			success: function (result) {
 				var status=JSON.parse(result);
-				if(status=="success")
-				{
+				if(status=="success"){
 					$("#selectFile_replacer").val("");
+					 $("#selectFile").val("");
 					$("#uploadBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
-				else
-				{
+				else{
 					var str="Something went wrong!! Note:check file extension";
 				}
 				$('#uploadFileMessage').html("");
@@ -125,6 +105,7 @@ $(document).ready(function(){
 				var status=JSON.parse(result);
 				if(status=="success"){
 					$("#selectZip_replacer").val("");
+					 $("#selectZip").val("");
 					$("#uploadZipBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
@@ -160,13 +141,11 @@ $(document).ready(function(){
 			success: function (data) {
 				var result=JSON.parse(data);
 				var Msg="";
-				if(result=="error")
-				{
+				if(result=="error"){
 					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
 
 				}
-				else
-				{
+				else{
 					str="<h3 style='color:#49b6a9;margin:0'> Cron Time Changed to "+result+"</h3>";
 				}
 				$("#status_timeMsg").html("");
@@ -175,14 +154,10 @@ $(document).ready(function(){
 				setTimeout(function(){
 					$("#status_timeMsg").fadeOut("slow");
 				}, 3000);
-
-
-
 			}
 		});
 		e.preventDefault();
 	});
-
 
 	$('input[type="checkbox"][name="templateImgs"]').on('change',function(){
 		var getArrVal = $('input[type="checkbox"][name="templateImgs"]:checked').map(function(){
@@ -207,17 +182,14 @@ $(document).ready(function(){
 			type: "POST",
 			url: url,
 			data: $("#setTemplatesForm").serialize(),
-			success: function(data)
-			{
+			success: function(data){
 				var result=JSON.parse(data);
 				var str="";
 				var str1="";
-				for(var i=0;i<result[0].length;i++)
-				{
+				for(var i=0;i<result[0].length;i++){
 					str+=result[0][i]+" ";
 				}
-				if(result[1].length!=0)
-				{
+				if(result[1].length!=0){
 					str1+=result[1][i]+" ";
 				}
 				$("#selectTemplateMsg").html("");
@@ -229,10 +201,8 @@ $(document).ready(function(){
 				setTimeout(function(){
 					$("#selectTemplateMsg").fadeOut("slow");
 				}, 3000);
-
 			}
 		});
-
 		e.preventDefault(); 
 	});
 
@@ -244,31 +214,25 @@ $(document).ready(function(){
 
 	var modal = document.getElementById('myModal');
 
-	// Get the button that opens the modal
 	var btn = document.getElementById("myBtn");
 
-	// Get the <span> element that closes the modal
 	var span = document.getElementsByClassName("close")[0];
 
-	// When the user clicks on the button, open the modal 
 	$(document).on('click','.templateImgs',function(){
 		$('#imgPreview').attr('src',$(this).attr('id'));
 		modal.style.display = "block";
 	});
 
-	// When the user clicks on <span> (x), close the modal
 	span.onclick = function() {
 		modal.style.display = "none";
 	}
 
-	// When the user clicks anywhere outside of the modal, close it
 	window.onclick = function(event) {
 		if (event.target == modal) {
 			modal.style.display = "none";
 		}
 	}
 	$('#mailLogsSelectOption').change( function(e) {
-
 		var selectedOption=$('#mailLogsSelectOption option:selected').text();
 		$.ajax({
 			type: 'post',
@@ -276,7 +240,6 @@ $(document).ready(function(){
 			data:{
 				selectedOption: selectedOption
 			},
-
 			success: function (result) {
 				var data=JSON.parse(result);
 				$('#mailLogs').html('');
@@ -294,9 +257,7 @@ $(document).ready(function(){
 			},error:function(){
 				console.log("err");
 			}
-
 		});
 		e.preventDefault();
 	});
-
 });
