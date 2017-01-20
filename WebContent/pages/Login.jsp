@@ -47,10 +47,7 @@
 									type="password" name="key" id="key" class="form-control"
 									placeholder="Password">
 							</div>
-							<div class="checkbox">
-								<span class="character-checkbox" id="showPassword_checkBox"></span>
-								<span class="label">Show password</span>
-							</div>
+							
 							<input type="submit" id="btn-login"
 								class="btn btn-custom btn-lg btn-block" value="Log in">
 						</form>

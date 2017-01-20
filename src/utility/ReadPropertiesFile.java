@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Properties;
-import javaConstants.Constants;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,28 +14,22 @@ public class ReadPropertiesFile {
 			throws FileNotFoundException, IOException {
 
 		Properties pro = new Properties();
-		try {
 			String path = request.getServletContext().getRealPath(
 					File.separator)
 					+ "MailSendingApplication.properties";
 			pro.load(new FileInputStream(path));
-		} catch (IOException e) {
-			System.out.println("FileNotFoundException in readP");
-			String errMsg = "FileNotFoundException.!!!";
-
-			e.printStackTrace();
-		}
-
-		Constants.setFrom = pro.getProperty("setFrom");
-		Constants.setPassword = pro.getProperty("setPassword");
-		Constants.setSubject = pro.getProperty("setSubject");
-		Constants.setStatus = pro.getProperty("setStatus");
-		Constants.templates = pro.getProperty("templates");
-		Constants.timeToRun = pro.getProperty("timeToRun");
-		Constants.setDbSchemaLink = pro.getProperty("setDbSchemaLink");
-		Constants.setDbUsername = pro.getProperty("setDbUsername");
-		Constants.setDbPassword = pro.getProperty("setDbPassword");
-
+			System.out.println("properties file read");
+			HashMap<String,String> hmProperties=new HashMap<String,String>();
+			hmProperties.put("templates",pro.getProperty("templates"));
+			hmProperties.put("timeToRun",pro.getProperty("timeToRun"));
+			hmProperties.put("setStatus",pro.getProperty("setStatus"));
+			hmProperties.put("setFrom",pro.getProperty("setFrom"));
+			hmProperties.put("setPassword",pro.getProperty("setPassword"));
+			hmProperties.put("setSubject",pro.getProperty("setSubject"));
+			hmProperties.put("setDbSchemaLink",pro.getProperty("setDbSchemaLink"));
+			hmProperties.put("setDbUsername",pro.getProperty("setDbUsername"));
+			hmProperties.put("setDbPassword",pro.getProperty("setDbPassword"));
+			request.setAttribute("Properties",hmProperties);
 	}
-
+	
 }

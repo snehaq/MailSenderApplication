@@ -1,17 +1,6 @@
-function showPassword(){
-	    var key_attr = $('#key').attr('type');
-	    if(key_attr != 'text') {
-	        $('.checkbox').addClass('show');
-	        $('#key').attr('type', 'text');
-	    } else {
-	        $('.checkbox').removeClass('show');
-	        $('#key').attr('type', 'password');
-	    }
-	}
+
 $(document).ready(function(){
-	$("#showPassword_checkBox").on("click",function (){
-		showPassword();
-		});
+	
 	$('#login-form').on('submit', function (e) {
 		var form = $(this)[0]; 
 		var formData = new FormData(form);

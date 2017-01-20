@@ -1,10 +1,11 @@
 package utility;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javaConstants.Constants;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,43 +37,24 @@ public class CronJob implements Job {
 	}
 
 	public static void ScheduleCronJob(HttpServletRequest req,
-			HttpServletResponse res) throws Exception {
+			HttpServletResponse res) throws ParseException, SchedulerException, FileNotFoundException, IOException {
 
-		try {
-
-			sched.deleteJob("MailSend", "Job1");
-
-			JobDetail jobDetail = new JobDetail("MailSend", "Job1",
-					CronJob.class);
-
-			ReadPropertiesFile.readConfig(req);
-
-			CronTrigger trigger = new CronTrigger("sendMailJob",
-					"triggerGroup1");
-
-			SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
-			Date date = parseFormat.parse(Constants.timeToRun);
-
-			SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
-			String date1 = displayFormat.format(date);
-
-			String[] timeSplit = date1.split(":");
-
-			trigger.setCronExpression("0 " + timeSplit[1] + " " + timeSplit[0]
-					+ " * * ?");
-
-			sched.getContext().put("request", req.getRequestURL().toString());
-
-			sched.start();
-			sched.scheduleJob(jobDetail, trigger);
-
-		} catch (SchedulerException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
+		sched.deleteJob("MailSend", "Job1");
+		JobDetail jobDetail = new JobDetail("MailSend", "Job1",
+				CronJob.class);
+		ReadPropertiesFile.readConfig(req);
+		CronTrigger trigger = new CronTrigger("sendMailJob",
+				"triggerGroup1");
+		SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
+		Date date = parseFormat.parse(((HashMap<String,String>) req.getAttribute("Properties")).get("timeToRun"));
+		SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+		String date1 = displayFormat.format(date);
+		String[] timeSplit = date1.split(":");
+		trigger.setCronExpression("0 " + timeSplit[1] + " " + timeSplit[0]
+				+ " * * ?");
+		sched.getContext().put("request", req.getRequestURL().toString());
+		sched.start();
+		sched.scheduleJob(jobDetail, trigger);
 	}
 
 	@Override
@@ -81,9 +63,7 @@ public class CronJob implements Job {
 		try {
 			SchedulerContext schedulerContext = cntxt.getScheduler()
 					.getContext();
-
 			String request1 = (String) schedulerContext.get("request");
-
 			sendMail(request1);
 		} catch (SchedulerException e) {
 			e.printStackTrace();
@@ -92,7 +72,6 @@ public class CronJob implements Job {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void unscheduleCronJob(HttpServletRequest req,
@@ -102,7 +81,6 @@ public class CronJob implements Job {
 	}
 
 	private void sendMail(String req) throws IOException {
-
 		GenericUtility.callGetForMail(req);
 
 	}

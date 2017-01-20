@@ -15,7 +15,6 @@ public class UnzipImages {
 	public static void unzipFile(HttpServletRequest request, String fileName,
 			String uploadFilePath) throws IOException {
 
-		String applicationPath = request.getServletContext().getRealPath("");
 		FileInputStream fis = null;
 		ZipInputStream zipIs = null;
 		ZipEntry zEntry = null;

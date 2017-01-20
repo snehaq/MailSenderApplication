@@ -3,8 +3,8 @@ package utility;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Properties;
-import javaConstants.Constants;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -20,12 +20,14 @@ import javax.servlet.http.HttpServletRequest;
 public class PasswordRecoveryMail {
 	String host = "smtp.gmail.com";
 	String port = "587";
-	String mailFrom = Constants.setFrom;
-	String password = Constants.setPassword;
+	String mailFrom ="";
+	String password ="";
 
 	public void sendHtmlEmail(HttpServletRequest request)
 			throws AddressException, MessagingException, FileNotFoundException,
 			IOException {
+		mailFrom = ((HashMap<String,String>) request.getAttribute("Properties")).get("setFrom");
+		password = ((HashMap<String,String>) request.getAttribute("Properties")).get("setPassword");
 
 		// sets SMTP server properties
 		Properties properties = new Properties();

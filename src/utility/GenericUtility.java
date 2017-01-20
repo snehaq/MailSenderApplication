@@ -95,7 +95,7 @@ public class GenericUtility {
 				}
 
 			}
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException e) {
 			String errMsg = "Something went wrng..!!!";
 			RedirectToError.errorPage(request, response, errMsg);
 		}
@@ -360,7 +360,6 @@ public class GenericUtility {
 
 	public static void callGetForMail(String req) throws IOException {
 		String url = req + "?mode=sendMail";
-
 		hitUrl(url, null);
 	}
 
@@ -373,7 +372,7 @@ public class GenericUtility {
 	public static void hitUrl(String url, String sessionId) throws IOException {
 
 		final String USER_AGENT = "Mozilla/5.0";
-
+		
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -447,7 +446,7 @@ public class GenericUtility {
 			pstm.setString(counter++, timestamp);
 			status = pstm.executeUpdate();
 
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException e) {
 
 			e.printStackTrace();
 		}

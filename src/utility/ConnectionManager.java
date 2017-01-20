@@ -5,32 +5,56 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import javaConstants.Constants;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class ConnectionManager {
 	public static Connection con;
 
-	public static Connection getConnection(HttpServletRequest request)
-			throws ClassNotFoundException, SQLException, FileNotFoundException,
-			IOException {
+	public static Connection getConnection(HttpServletRequest req){
 		Connection con = null;
-		ReadPropertiesFile.readConfig(request);
-		Class.forName("com.mysql.jdbc.Driver");
-		con = DriverManager.getConnection(Constants.setDbSchemaLink,
-				Constants.setDbUsername, Constants.setDbPassword);
+		try {
+			ReadPropertiesFile.readConfig(req);
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection(((HashMap<String,String>) req.getAttribute("Properties")).get("setDbSchemaLink"),
+					((HashMap<String,String>) req.getAttribute("Properties")).get("setDbUsername"),((HashMap<String,String>) req.getAttribute("Properties")).get("setDbPassword"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return con;
 	}
 
-	public static Connection closeConnection(HttpServletRequest request)
-			throws ClassNotFoundException, SQLException, FileNotFoundException,
-			IOException {
+	public static Connection closeConnection(HttpServletRequest req){
 		Connection con = null;
-		ReadPropertiesFile.readConfig(request);
-		Class.forName("com.mysql.jdbc.Driver");
-		con = DriverManager.getConnection(Constants.setDbSchemaLink,
-				Constants.setDbUsername, Constants.setDbPassword);
+		try {
+			ReadPropertiesFile.readConfig(req);
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection(((HashMap<String,String>) req.getAttribute("Properties")).get("setDbSchemaLink"),
+					((HashMap<String,String>) req.getAttribute("Properties")).get("setDbUsername"),((HashMap<String,String>) req.getAttribute("Properties")).get("setDbPassword"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return con;
 	}
 }
