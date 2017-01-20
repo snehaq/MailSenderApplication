@@ -52,7 +52,7 @@
 								class="btn btn-custom btn-lg btn-block" value="Log in">
 						</form>
 						<hr>
-						<a href="" class="forget" data-toggle="modal"
+						<a href="" class="forget" data-toggle="modal" id="forgotPassword"
 							data-target=".forget-modal">Forgot your password?</a>
 					</div>
 				</div>

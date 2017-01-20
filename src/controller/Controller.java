@@ -24,8 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import com.google.gson.Gson;
-
 import mail.Main;
 import utility.AddXlsToDb;
 import utility.CronJob;
@@ -35,6 +33,7 @@ import utility.ReadPropertiesFile;
 import utility.RedirectToError;
 import utility.UnzipImages;
 
+import com.google.gson.Gson;
 
 @WebServlet("/controller")
 @MultipartConfig
@@ -52,10 +51,10 @@ public class Controller extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String mode = request.getParameter("mode");
+
 		HttpSession session1 = request.getSession(false);
 		if (session1 != null) {
 			if (("updateCronJobTimeToRun").equals(mode)) {
-				System.out.println("in updateCronJobTimeToRun mode");
 				try {
 					CronJob.unscheduleCronJob(request, response);
 				} catch (Exception e) {
@@ -64,11 +63,9 @@ public class Controller extends HttpServlet {
 			} else if (("dashboard").equals(mode)) {
 				redirectToMainPageWithData(request, response);
 
-			} else if (("checkExpiry").equals(mode)) {
-				checkExpiry(request, response);
 			} else {
 				response.getWriter().append("CronJob Scheduled: ")
-				.append(request.getContextPath());
+						.append(request.getContextPath());
 				try {
 					CronJob.ScheduleCronJob(request, response);
 				} catch (Exception e) {
@@ -88,16 +85,21 @@ public class Controller extends HttpServlet {
 					RedirectToError.errorPage(request, response, errMsg);
 					e.printStackTrace();
 				}
-				if (((HashMap<String,String>) request.getAttribute("Properties")).get("setStatus").equals("enable")) {
+				if (((HashMap<String, String>) request
+						.getAttribute("Properties")).get("setStatus").equals(
+						"enable")) {
 					try {
 						Main.dataForSendMail(request, UPLOAD_DIR_IMG, response);
-
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				} else if (((HashMap<String,String>) request.getAttribute("Properties")).get("setStatus").equals("disable")) {
+				} else if (((HashMap<String, String>) request
+						.getAttribute("Properties")).get("setStatus").equals(
+						"disable")) {
 					System.out.println("Mail functionality disabled");
 				}
+			} else if (("checkExpiry").equals(mode)) {
+				checkExpiry(request, response);
 			} else
 				response.sendRedirect("./pages/Login.jsp");
 		}
@@ -108,7 +110,7 @@ public class Controller extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		String mode = request.getParameter("mode");
 		HttpSession session = request.getSession(false);
-		try{
+		try {
 			if (session == null) {
 				if (("loginAuthentication").equals(mode)) {
 					loginAuthentication(request, response);
@@ -116,7 +118,7 @@ public class Controller extends HttpServlet {
 					recoveryEmail(request, response);
 				} else if ("changePassword".equals(mode)) {
 					changePassword(request, response);
-				}else {
+				} else {
 					response.sendRedirect("./pages/Login.jsp");
 				}
 			} else {
@@ -136,7 +138,7 @@ public class Controller extends HttpServlet {
 					userLogout(request, response);
 				}
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
@@ -186,7 +188,8 @@ public class Controller extends HttpServlet {
 	}
 
 	private void changePassword(HttpServletRequest request,
-			HttpServletResponse response) throws ClassNotFoundException, NoSuchAlgorithmException, SQLException {
+			HttpServletResponse response) throws ClassNotFoundException,
+			NoSuchAlgorithmException, SQLException {
 		String conf_pass = request.getParameter("conf_pass");
 		try {
 			int status = GenericUtility.changePassword(conf_pass, request,
@@ -200,6 +203,8 @@ public class Controller extends HttpServlet {
 	public void recoveryEmail(HttpServletRequest request,
 			HttpServletResponse response) {
 		String mailTo = request.getParameter("email");
+		String username = request.getParameter("username");
+		String userEmail = null;
 		final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 		String status = "false";
@@ -209,20 +214,29 @@ public class Controller extends HttpServlet {
 
 		} else {
 			try {
-				ReadPropertiesFile.readConfig(request);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+				userEmail = GenericUtility.checkEmailValid(username, request);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
-			SecurityManager s = new SecurityManager();
-			PasswordRecoveryMail mailer = new PasswordRecoveryMail();
-			try {
-				mailer.sendHtmlEmail(request);
-				status = "true";
+			if (userEmail.equals(mailTo)) {
+				try {
+					ReadPropertiesFile.readConfig(request);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				SecurityManager s = new SecurityManager();
+				PasswordRecoveryMail mailer = new PasswordRecoveryMail();
+				try {
+					mailer.sendHtmlEmail(request);
+					status = "true";
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			} else {
+				status = "emailInvalid";
 			}
 		}
 		try {
@@ -233,7 +247,9 @@ public class Controller extends HttpServlet {
 	}
 
 	private void loginAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws ClassNotFoundException, NoSuchAlgorithmException, FileNotFoundException, SQLException, IOException {
+			HttpServletResponse response) throws ClassNotFoundException,
+			NoSuchAlgorithmException, FileNotFoundException, SQLException,
+			IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("key");
 		ResultSet user = null;
@@ -315,7 +331,7 @@ public class Controller extends HttpServlet {
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -348,8 +364,9 @@ public class Controller extends HttpServlet {
 		}
 		if (templateSelectedString == "") {
 
-			templateSelectedString =((HashMap<String,String>) request.getAttribute("Properties")).get("templates");
-			System.out.println(templateSelectedString);
+			templateSelectedString = ((HashMap<String, String>) request
+					.getAttribute("Properties")).get("templates");
+
 		}
 		String path = request.getServletContext().getRealPath(File.separator)
 				+ "MailSendingApplication.properties";
@@ -382,7 +399,6 @@ public class Controller extends HttpServlet {
 
 	private void redirectToMainPageWithData(HttpServletRequest request,
 			HttpServletResponse response) throws FileNotFoundException {
-		System.out.println("in redirect");
 		List<String> imagePath = null;
 
 		String relativeWebPath = "/templateImgs";
@@ -402,7 +418,7 @@ public class Controller extends HttpServlet {
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 			imagePath = new ArrayList<String>();
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -418,7 +434,8 @@ public class Controller extends HttpServlet {
 			}
 			ReadPropertiesFile.readConfig(request);
 
-			String[] templatesFromPropertiesFile = ((HashMap<String,String>) request.getAttribute("Properties")).get("templates").split(",");
+			String[] templatesFromPropertiesFile = ((HashMap<String, String>) request
+					.getAttribute("Properties")).get("templates").split(",");
 			ArrayList<String> templatesAlreadySet = new ArrayList<String>();
 			for (int i = 0; i < templatesFromPropertiesFile.length; i++) {
 				templatesAlreadySet.add(templatesFromPropertiesFile[i]);
@@ -476,7 +493,7 @@ public class Controller extends HttpServlet {
 					if (fileName.split("\\.")[1].equals("zip")) {
 						part.write(uploadFilePath + File.separator + fileName);
 						UnzipImages
-						.unzipFile(request, fileName, uploadFilePath);
+								.unzipFile(request, fileName, uploadFilePath);
 						File file = new File(uploadFilePath + File.separator
 								+ fileName);
 						if (file.delete()) {
@@ -513,7 +530,8 @@ public class Controller extends HttpServlet {
 	}
 
 	public void uploadFile(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ClassNotFoundException, SQLException {
+			HttpServletResponse response) throws IOException,
+			ClassNotFoundException, SQLException {
 
 		String applicationPath = request.getServletContext().getRealPath("");
 		String uploadFilePath = applicationPath + File.separator + UPLOAD_DIR;

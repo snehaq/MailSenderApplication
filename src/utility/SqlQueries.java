@@ -12,7 +12,8 @@ public class SqlQueries {
 	public static final String getColumnNames = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'xls2db' ORDER BY ORDINAL_POSITION";
 	public static String authenticateUser = "select * from user where username=? and password=?";
 	public static String updatePassword = "update user set password=? where id=1";
-	public static String updatetimestamp= "update user set timestamp=? where id=1";
-	public static String checkLinkToken= "select * from user where timestamp=?";
-	
+	public static String updatetimestamp = "update user set timestamp=? where id=1";
+	public static String checkLinkToken = "select * from user where timestamp=?";
+	public static String getUserEmail = "select * from user where username=?";
+
 }

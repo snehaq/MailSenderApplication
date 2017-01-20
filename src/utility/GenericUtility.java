@@ -372,7 +372,7 @@ public class GenericUtility {
 	public static void hitUrl(String url, String sessionId) throws IOException {
 
 		final String USER_AGENT = "Mozilla/5.0";
-		
+
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -510,4 +510,26 @@ public class GenericUtility {
 		}
 	}
 
+	public static String checkEmailValid(String username,
+			HttpServletRequest request) throws SQLException {
+		Connection con = null;
+		ResultSet rs = null;
+		PreparedStatement pstm = null;
+		Statement stmt = null;
+		int counter = 1;
+		con = ConnectionManager.getConnection(request);
+		pstm = con.prepareStatement(SqlQueries.getUserEmail);
+		pstm.setString(counter++, username);
+		rs = pstm.executeQuery();
+		String userEmail = "";
+		if (rs != null) {
+			while (rs.next()) {
+				userEmail = rs.getString("email_id");
+			}
+		} else {
+			userEmail = "empty";
+		}
+		return userEmail;
+
+	}
 }
