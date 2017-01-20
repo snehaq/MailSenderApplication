@@ -30,7 +30,7 @@ CREATE TABLE `mail_logs` (
   `email` varchar(255) DEFAULT NULL,
   `dateofdelivery` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,6 +39,7 @@ CREATE TABLE `mail_logs` (
 
 LOCK TABLES `mail_logs` WRITE;
 /*!40000 ALTER TABLE `mail_logs` DISABLE KEYS */;
+INSERT INTO `mail_logs` VALUES (72,'Hussain','hmasalawala@etouch.net','19-Jan-2017 11:22:07'),(73,'Sneha','skamlapure@etouch.net','19-Jan-2017 11:22:13');
 /*!40000 ALTER TABLE `mail_logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -54,6 +55,7 @@ CREATE TABLE `user` (
   `username` varchar(45) DEFAULT NULL,
   `password` varchar(45) DEFAULT NULL,
   `timestamp` varchar(45) DEFAULT NULL,
+  `email_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -64,7 +66,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin','f84d8979ee7b265377f8e6a1d0a74e91','');
+INSERT INTO `user` VALUES (1,'admin','f84d8979ee7b265377f8e6a1d0a74e91','1484911966390','');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,6 +95,7 @@ CREATE TABLE `xls2db` (
 
 LOCK TABLES `xls2db` WRITE;
 /*!40000 ALTER TABLE `xls2db` DISABLE KEYS */;
+INSERT INTO `xls2db` VALUES (1001,'Hussain','19/01/1990','December','Hyderabad','hmasalawala@etouch.net',NULL),(1002,'Sneha','19/01/1990','December','Thane','skamlapure@etouch.net',NULL),(1003,'Meghna','01/01/1990','January','Thane','thehoffmancode@gmail.com',NULL),(1004,'yaju','03/01/1997','January','Pune','hmasalawala1@gmail.com',NULL),(1005,'vinayak','08/12/2016','December','Pune','skamlapure02@gmail.com',NULL),(1006,'glen','09/08/1989','september','thane','ybandkar@eouch.net',NULL),(1007,'Minu','02/10/1991','October','Hyderabad','minu@etouch.net',NULL),(1008,'Rajesh Dhoble','01/01/1991','January','Thane','rd@gmail.com',NULL);
 /*!40000 ALTER TABLE `xls2db` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -105,4 +108,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-12 16:21:35
+-- Dump completed on 2017-01-20 17:45:49
