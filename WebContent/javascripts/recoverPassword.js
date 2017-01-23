@@ -41,22 +41,26 @@ $(document).ready(function(){
 
 				if(status==1)
 				{
-					var str="";
-					str+="<div class='row' id='msg'><div class='col-md-4'></div><div class='col-md-4'><h1>Your Password was changed successfully!</h1></div></div>";
-					str+="<div class='row' id='msg'><div class='col-md-5'></div><div class='col-md-4'><a href='pages/Login.jsp'>Click here to login</a></div></div>"
+					var msg="";
+					msg+="<div class='row' id='msg'><div class='col-md-4'></div><div class='col-md-4'><h1>Your Password was changed successfully!</h1></div></div>";
+					msg+="<div class='row' id='msg'><div class='col-md-5'></div><div class='col-md-4'><a href='pages/Login.jsp'>Click here to login</a></div></div>"
 					$('.container').html('');
-					$('.container').append(str);
+					$('.container').append(msg);
 				}
 				else
 				{
-					var msg="something went wrong";
+					$('#authFailed h2').html("");
+					var msg="Failed to change Password";
 					$('#authFailed h2').html(msg);
 					$('#username').val("");
 					$('#key').val("");
 				}
 
 			},error:function(){
-				console.log("err");
+				var msg="Something went wrong";
+				$('#authFailed h2').html(msg);
+				$('#username').val("");
+				$('#key').val("");
 			}
 		});
 		e.preventDefault();

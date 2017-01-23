@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -29,7 +31,7 @@ public class GenericUtility {
 	public static List getEmployeesWithBirthdayToday(List columnNames,
 			List EmpWithBirthDaysList, HttpServletRequest request,
 			HttpServletResponse response) throws FileNotFoundException,
-			IOException {
+			IOException, ClassNotFoundException {
 		ResultSet rs = null;
 		int counter = 1;
 		Connection con = null;
@@ -42,7 +44,7 @@ public class GenericUtility {
 		PreparedStatement ps1 = null;
 		ResultSet rs1 = null;
 		try {
-			con = ConnectionManager.getConnection(request);
+			con = ConnectionManager.getConnection(request, response);
 			ps = con.prepareStatement(SqlQueries.getEmpOnBirthDay);
 			ps.setString(counter++, date + "%");
 			rs = ps.executeQuery();
@@ -113,7 +115,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 
 		Date currentDate = new Date();
 		SimpleDateFormat dt1 = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
@@ -154,7 +156,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getColumnNames);
 		rs = ps.executeQuery();
 		while (rs.next()) {
@@ -173,7 +175,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getAllEmpEmails);
 		rs = ps.executeQuery();
 		while (rs.next()) {
@@ -192,7 +194,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getAllMailLogs);
 		rs = ps.executeQuery();
 		List<HashMap> mailLogs = new ArrayList<HashMap>();
@@ -218,7 +220,7 @@ public class GenericUtility {
 		int counter = 1;
 		Connection con = null;
 		PreparedStatement ps = null;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 		ps = con.prepareStatement(SqlQueries.getLastWeekMailLogs);
 
 		Date currentDate = new Date();
@@ -255,7 +257,7 @@ public class GenericUtility {
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		int counter = 1;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 
 		pstm = con.prepareStatement(SqlQueries.insertXlsToDb);
 		pstm.setInt(counter++, id);
@@ -277,7 +279,7 @@ public class GenericUtility {
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		Statement stmt = null;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 		con.setAutoCommit(false);
 		stmt = con.createStatement();
 
@@ -322,9 +324,9 @@ public class GenericUtility {
 		int counter = 1;
 		String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 		String cryptPassword = "";
+		System.out.println("password is "+password);
 		cryptPassword = GenericUtility.encryptPassword(password + salt);
-		con = ConnectionManager.getConnection(request);
-		con.setAutoCommit(false);
+		con = ConnectionManager.getConnection(request, response);
 		pstm = con.prepareStatement(SqlQueries.authenticateUser);
 		pstm.setString(counter++, username);
 		pstm.setString(counter++, cryptPassword);
@@ -410,7 +412,7 @@ public class GenericUtility {
 		int counter = 1;
 		int status = 0;
 		try {
-			con = ConnectionManager.getConnection(request);
+			con = ConnectionManager.getConnection(request, response);
 
 			String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 			String cryptPassword = "";
@@ -430,8 +432,8 @@ public class GenericUtility {
 	}
 
 	public static int changeTimeStamp(String timestamp,
-			HttpServletRequest request) throws FileNotFoundException,
-			IOException {
+			HttpServletRequest request,HttpServletResponse response) throws FileNotFoundException,
+			IOException, ClassNotFoundException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
@@ -439,7 +441,7 @@ public class GenericUtility {
 		int counter = 1;
 		int status = 0;
 		try {
-			con = ConnectionManager.getConnection(request);
+			con = ConnectionManager.getConnection(request, response);
 
 			pstm = con.prepareStatement(SqlQueries.updatetimestamp);
 			counter = 1;
@@ -461,7 +463,7 @@ public class GenericUtility {
 		PreparedStatement pstm = null;
 		Statement stmt = null;
 		int counter = 1;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 		pstm = con.prepareStatement(SqlQueries.checkLinkToken);
 		pstm.setString(counter++, token);
 		rs = pstm.executeQuery();
@@ -511,13 +513,13 @@ public class GenericUtility {
 	}
 
 	public static String checkEmailValid(String username,
-			HttpServletRequest request) throws SQLException {
+			HttpServletRequest request,HttpServletResponse  response) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
 		Statement stmt = null;
 		int counter = 1;
-		con = ConnectionManager.getConnection(request);
+		con = ConnectionManager.getConnection(request, response);
 		pstm = con.prepareStatement(SqlQueries.getUserEmail);
 		pstm.setString(counter++, username);
 		rs = pstm.executeQuery();
@@ -531,5 +533,22 @@ public class GenericUtility {
 		}
 		return userEmail;
 
+	}
+	public static void errorForwader(HttpServletRequest request, HttpServletResponse response, Exception e)
+	{
+		RequestDispatcher rd=request.getRequestDispatcher("pages/Error.jsp");
+		try {
+			rd.forward(request, response);
+		} catch (ServletException | IOException e1) {
+			e1.printStackTrace();
+		} 
+	}
+	public static void redirectError(HttpServletResponse response,Exception e)
+	{
+		try {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 }

@@ -20,13 +20,13 @@ $(document).ready(function(){
 	document.getElementById("selectFile_replacer").onchange = function () {
 		var filePath=document.getElementById("selectFile_replacer").value;
 		var fileName = filePath.substring(filePath.lastIndexOf("\\")+1,filePath.length);
-		 $("#selectFile").val(fileName);
-		 
+		$("#selectFile").val(fileName);
+
 	};
 	document.getElementById("selectZip_replacer").onchange = function () {
 		var filePath=document.getElementById("selectZip_replacer").value;
 		var fileName = filePath.substring(filePath.lastIndexOf("\\")+1,filePath.length);
-		 $("#selectZip").val(fileName);
+		$("#selectZip").val(fileName);
 	};
 	$('input[type="radio"]').on('change', function(e) {
 		var status=$(this).val();
@@ -41,11 +41,11 @@ $(document).ready(function(){
 			success: function(data){
 				var result=JSON.parse(data);
 				var Msg="";
-				if(result!="error"){
+				if(result!="invalid"){
 					str="<h3 style='color:#49b6a9;margin:0'> Status Changed to "+result+"</h3>";
 				}
 				else{
-					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
+					str="<h3 style='color:#49b6a9;margin:0'>Invalid Value</h3>";
 				}
 				$("#status_timeMsg").html("");
 				$("#status_timeMsg").append(str);
@@ -53,6 +53,12 @@ $(document).ready(function(){
 				setTimeout(function(){
 					$("#status_timeMsg").fadeOut("slow");
 				}, 3000);
+			},
+			error:function(){
+				str="<h3 style='color:#49b6a9;margin:0'>Something Went Wrong!!!</h3>";
+				$("#status_timeMsg").html("");
+				$("#status_timeMsg").append(str);
+				$("#status_timeMsg").show();
 			}
 		});
 
@@ -71,12 +77,12 @@ $(document).ready(function(){
 				var status=JSON.parse(result);
 				if(status=="success"){
 					$("#selectFile_replacer").val("");
-					 $("#selectFile").val("");
+					$("#selectFile").val("");
 					$("#uploadBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
 				else{
-					var str="Something went wrong!! Note:check file extension";
+					var str="Invalid file extension";
 				}
 				$('#uploadFileMessage').html("");
 				$('#uploadFileMessage').append(str);
@@ -85,7 +91,11 @@ $(document).ready(function(){
 					$("#uploadFileMsg").fadeOut("slow");
 				}, 3000);
 			},error:function(){
-				console.log("err");
+				var str="Something went wrong!!";
+				$('#uploadFileMessage').html("");
+				$('#uploadFileMessage').append(str);
+				$('#uploadFileMsg').show();
+				
 			}
 
 		});
@@ -105,7 +115,7 @@ $(document).ready(function(){
 				var status=JSON.parse(result);
 				if(status=="success"){
 					$("#selectZip_replacer").val("");
-					 $("#selectZip").val("");
+					$("#selectZip").val("");
 					$("#uploadZipBtn").attr("disabled","disabled");
 					var str="File successfully uploaded!";
 				}
@@ -115,8 +125,6 @@ $(document).ready(function(){
 				else if(status=="extensionError"){
 					var str="UPLOAD FAILED note:Only .zip , .jpg files allowed";
 
-				}else{
-					var str="Something went wrong!";
 				}
 				$('#imageFileMessage').html("");
 				$('#imageFileMessage').append(str);
@@ -124,6 +132,13 @@ $(document).ready(function(){
 				setTimeout(function(){
 					$("#imageFileMessage").fadeOut("slow");
 				}, 3000);
+			},
+			error:function(){
+				var str="Something went wrong!";
+				$('#imageFileMessage').html("");
+				$('#imageFileMessage').append(str);
+				$('#imageFileMessage').show();
+				
 			}
 		});
 		e.preventDefault();
@@ -141,19 +156,25 @@ $(document).ready(function(){
 			success: function (data) {
 				var result=JSON.parse(data);
 				var Msg="";
-				if(result=="error"){
-					str="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
+				if(result=="invalid"){
+					Msg="<h3 style='color:#49b6a9;margin:0'>Some Error has occured</h3>";
 
 				}
 				else{
-					str="<h3 style='color:#49b6a9;margin:0'> Cron Time Changed to "+result+"</h3>";
+					Msg="<h3 style='color:#49b6a9;margin:0'> Cron Time Changed to "+result+"</h3>";
 				}
 				$("#status_timeMsg").html("");
-				$("#status_timeMsg").append(str);
+				$("#status_timeMsg").append(Msg);
 				$("#status_timeMsg").show();
 				setTimeout(function(){
 					$("#status_timeMsg").fadeOut("slow");
 				}, 3000);
+			},
+			error:function(){
+				var Msg="";
+				$("#status_timeMsg").html("");
+				$("#status_timeMsg").append(Msg);
+				$("#status_timeMsg").show();
 			}
 		});
 		e.preventDefault();
@@ -201,6 +222,9 @@ $(document).ready(function(){
 				setTimeout(function(){
 					$("#selectTemplateMsg").fadeOut("slow");
 				}, 3000);
+			},error:function(){
+				$("#selectTemplateMsg").html("");
+				$("#selectTemplateMsg").append("<h3 style='color:red;margin:0'>Something Went Wrong "+str+"</h3>");
 			}
 		});
 		e.preventDefault(); 
@@ -255,7 +279,10 @@ $(document).ready(function(){
 				$('#mailLogs').append(htmlString);
 
 			},error:function(){
-				console.log("err");
+				$('#mailLogs').html('');
+				var htmlString="";
+				html+="<h3 style='color:red'>Something went wrong</h3>"
+				$('#mailLogs').append(htmlString);
 			}
 		});
 		e.preventDefault();

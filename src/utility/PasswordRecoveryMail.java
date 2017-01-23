@@ -16,6 +16,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class PasswordRecoveryMail {
 	String host = "smtp.gmail.com";
@@ -23,9 +24,9 @@ public class PasswordRecoveryMail {
 	String mailFrom ="";
 	String password ="";
 
-	public void sendHtmlEmail(HttpServletRequest request)
+	public void sendHtmlEmail(HttpServletRequest request,HttpServletResponse response)
 			throws AddressException, MessagingException, FileNotFoundException,
-			IOException {
+			IOException, ClassNotFoundException {
 		mailFrom = ((HashMap<String,String>) request.getAttribute("Properties")).get("setFrom");
 		password = ((HashMap<String,String>) request.getAttribute("Properties")).get("setPassword");
 
@@ -51,7 +52,7 @@ public class PasswordRecoveryMail {
 		long millisecond = new Date().getTime();
 		String timestamp = String.valueOf(millisecond);
 		;
-		GenericUtility.changeTimeStamp(timestamp, request);
+		GenericUtility.changeTimeStamp(timestamp, request,response);
 
 		String mailTo = request.getParameter("email");
 		String subject = "Password Recovery";

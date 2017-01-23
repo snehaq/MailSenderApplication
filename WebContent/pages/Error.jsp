@@ -8,12 +8,8 @@
 </head>
 <body>
 <%String msg=(String)request.getAttribute("errorMessage"); %>
-
-<%if(msg==null){ %>
-<h2>error</h2>
-<%}else{ %>
-<%=msg %>
+<%if(msg!=null){ %>
+<h2><%=msg %></h2>
 <%} %>
-hellllooo
 </body>
 </html>
