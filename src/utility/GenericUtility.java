@@ -324,7 +324,7 @@ public class GenericUtility {
 		int counter = 1;
 		String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 		String cryptPassword = "";
-		System.out.println("password is "+password);
+		
 		cryptPassword = GenericUtility.encryptPassword(password + salt);
 		con = ConnectionManager.getConnection(request, response);
 		pstm = con.prepareStatement(SqlQueries.authenticateUser);
