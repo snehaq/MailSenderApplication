@@ -48,7 +48,7 @@
 									placeholder="Password">
 							</div>
 							
-							<input type="submit" id="btn-login"
+							<input type="button" id="btn-login"
 								class="btn btn-custom btn-lg btn-block" value="Log in">
 						</form>
 						<hr>

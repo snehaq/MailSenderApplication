@@ -1,50 +1,69 @@
 $(document).ready(function(){
-	$("#forgotPassword").click(function(){
+	$('#forgotPassword').on('click',function(){
 		if($("#username").val()==""){
+			$("#forgotPassword").removeAttr("data-target");
 			$("#authFailed").html("");
 			$("#authFailed").append("<h2>Please enter a username</h2>");
 			$("#authFailed").show();
 			setTimeout(function(){
 				$("#authFailed").fadeOut("slow");
 			}, 3000);
-			$("#forgotPassword").removeAttr("data-target");
 		}
 		else{
 			$("#forgotPassword").attr("data-target",".forget-modal");
 		}
 	});
 
-	$('#login-form').on('submit', function (e) {
-		var form = $(this)[0]; 
-		var formData = new FormData(form);
-		$.ajax({
-			type: 'post',
-			url: '/MailSendingApplication/controller?mode=loginAuthentication',
-			data: formData,
-			contentType: false,
-			processData: false,
-			success: function (result) {
-				var status=JSON.parse(result);
-				if(status=="true")
-				{
-					window.location = '/MailSendingApplication/controller?mode=dashboard';
-				}
-				else
-				{
-					var msg="username or password invalid";
-					$('#authFailed h2').html(msg);
-					$('#username').val("");
-					$('#key').val("");
-
-				}
-
-			},error:function(){
-				console.log("err");
-			}
-		});
-		e.preventDefault();
+	$('#btn-login').on('click', function (e) {
+		if($("#username").val()=="" ||$("#key").val()=="")
+		{
+			$("#authFailed").html("");
+			$("#authFailed").append("<h2>Username or password not entered</h2>");
+			$("#authFailed").show();
+			setTimeout(function(){
+				$("#authFailed").fadeOut("slow");
+			}, 3000);
+		}
+		else{
+			$("#btn-login").attr("type","submit");
+			loginAuthentication();
+			
+		}
 	});
-	$('#recoveryBtn').on('click',function(e){
+	function loginAuthentication()
+	{
+		$('#login-form').submit(function(e){
+			var form = $(this)[0]; 
+			var formData = new FormData(form);
+			$.ajax({
+				type: 'post',
+				url: '/MailSendingApplication/controller?mode=loginAuthentication',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function (result) {
+					var status=JSON.parse(result);
+					if(status=="true")
+					{
+						window.location = '/MailSendingApplication/controller?mode=dashboard';
+					}
+					else
+					{
+						var msg="username or password invalid";
+						$('#authFailed h2').html(msg);
+						$('#username').val("");
+						$('#key').val("");
+
+					}
+
+				},error:function(){
+					console.log("err");
+				}
+			});
+			e.preventDefault();
+		});
+	}
+	$(document).on('click','#recoveryBtn',function(e){
 		var email=$("#recovery-email").val();
 		var username=$("#username").val();
 		$.ajax({
@@ -80,7 +99,7 @@ $(document).ready(function(){
 						$("#modalContent").show();
 						$(".modal-backdrop").show();
 						setTimeout(function(){
-							$('body').removeClass("modal-open");
+							/*$('body').removeClass("modal-open");*/
 							$(".forget-modal").fadeOut("slow");
 							$(".modal-backdrop").remove();
 							$("#modalContent").html(initialHtml);
@@ -92,7 +111,7 @@ $(document).ready(function(){
 						var str="<div class='row' style='margin-top:15%'><div class='col-md-12'style='padding-left:27%;'><h4>Mail delivery failed!!</h4></div></div>"
 							$('#modalContent').append(str);
 						setTimeout(function(){
-							$('body').removeClass();
+							/*$('body').removeClass();*/
 							$("#modalContent").fadeOut("slow");
 							$(".modal-backdrop").remove();
 							$("#modalContent").html(initialHtml);
