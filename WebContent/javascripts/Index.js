@@ -1,4 +1,63 @@
+function callDashBoardInController(){
+	$.ajax({
+		type: 'get',
+		url: '/MailSendingApplication/controller?mode=dashboard',
+		success: function (result) {
+			var data=JSON.parse(result);
+			var templateImg=data[1];
+			var pastWeekMailLogs=data[0];
+			var templateSelected=data[2];
+			var htmlString="";
+			var htmlString1="";
+			if (templateImg.length==0){
+				htmlString+='<h3 style="color: #d15353; margin-left: 33%">No Templates to Display</h3></div></form>';
+			}
+			else{
+				for(var i=0;i<templateImg.length;i++)
+				{
+					htmlString+='<div class="col-md-2  templateImages" style="margin: 10px; height: 120px; padding-bottom: 5%;"><img src="/MailSendingApplication/'+templateImg[i]+'" class="templateImgs" id='+templateImg[i]+' data-container="body" data-toggle="popover" data-placement="top" data-content="click to preview" style="height: 100%; width: 100%; outline: none; border-color: #9ecaed; box-shadow: 0 0 20px #9ecaed; border-radius: 5px;">';
+					htmlString+='<input type="checkbox" name="templateImgs" class="templates" value="'+templateImg[i]+'"';
+					for(var j = 0 ; j <=i; j++){
+						if(templateImg[i].split("/")[1].split(".")[0]==templateSelected[j]){
+							htmlString+=' checked ';
+						}
+						else{
+							htmlString+=' ';
+						}
+					}
+					htmlString+='style="margin-left: 40%; width: 20px; height: 20px; margin-bottom: 1%;" /></div>';
+				}
+			}
+			if(pastWeekMailLogs.length==0){
+				htmlString1='<div class="col-md-12" id="mailLogs"><h2>No Mail Logs Avalable</h2></div>';
+			}
+			else{
+				htmlString1+='<div class="col-md-12" id="mailLogs"><table class="table table-hover"><thead><tr><th>id</th><th>Name</th><th>Email</th><th>Date of Delivery</th></tr></thead><tbody>';
+				for(var i=0;i<pastWeekMailLogs.length;i++){
+					htmlString1+='<tr><td>'+pastWeekMailLogs[i].id+'</td><td>'+pastWeekMailLogs[i].name+'</td><td>'+pastWeekMailLogs[i].email+'</td><td>'+pastWeekMailLogs[i].dateofdelivery+'</td></tr>';
+				}
+				htmlString1+='</tbody></table></div>';
+			}
+			$("#templateChooserUi").append(htmlString);
+			$("#mailLogsRow").append(htmlString1);
+
+
+
+		},error: function(data) {
+			$("#container").html("");
+			var errorMsg="";
+			errorMsg+="<div class='row' id='msg'><div class='col-md-3'></div><div class='col-md-9'><h2 style='color:#e53939'>Something went wrong!!!</h2></div></div>";
+			$("#container").append(errorMsg);
+		}
+
+	});
+}
+function redirectToLoginPage(){
+	window.location.href="./Login.jsp";
+}
 $(document).ready(function(){
+
+
 	$('#uploadBtn').attr('disabled','disabled');
 	$('#uploadZipBtn').attr('disabled','disabled');
 
@@ -95,7 +154,7 @@ $(document).ready(function(){
 				$('#uploadFileMessage').html("");
 				$('#uploadFileMessage').append(str);
 				$('#uploadFileMsg').show();
-				
+
 			}
 
 		});
@@ -138,7 +197,7 @@ $(document).ready(function(){
 				$('#imageFileMessage').html("");
 				$('#imageFileMessage').append(str);
 				$('#imageFileMessage').show();
-				
+
 			}
 		});
 		e.preventDefault();
@@ -224,7 +283,7 @@ $(document).ready(function(){
 				}, 3000);
 			},error:function(){
 				$("#selectTemplateMsg").html("");
-				$("#selectTemplateMsg").append("<h3 style='color:red;margin:0'>Something Went Wrong "+str+"</h3>");
+				$("#selectTemplateMsg").append("<h3 style='color:red;margin:0'>Something Went Wrong </h3>");
 			}
 		});
 		e.preventDefault(); 
@@ -282,7 +341,7 @@ $(document).ready(function(){
 				$('#mailLogs').html('');
 				var htmlString="";
 				html+="<h3 style='color:red'>Something went wrong</h3>"
-				$('#mailLogs').append(htmlString);
+					$('#mailLogs').append(htmlString);
 			}
 		});
 		e.preventDefault();

@@ -284,7 +284,6 @@ public class GenericUtility {
 		stmt = con.createStatement();
 
 		rs = stmt.executeQuery(SqlQueries.getAllEmpData);
-
 		return rs;
 
 	}
@@ -324,7 +323,7 @@ public class GenericUtility {
 		int counter = 1;
 		String salt = "Random$SaltValue#WithSpecialCharacters12@$@4&#%^$*";
 		String cryptPassword = "";
-		
+
 		cryptPassword = GenericUtility.encryptPassword(password + salt);
 		con = ConnectionManager.getConnection(request, response);
 		pstm = con.prepareStatement(SqlQueries.authenticateUser);
@@ -432,8 +431,8 @@ public class GenericUtility {
 	}
 
 	public static int changeTimeStamp(String timestamp,
-			HttpServletRequest request,HttpServletResponse response) throws FileNotFoundException,
-			IOException, ClassNotFoundException {
+			HttpServletRequest request, HttpServletResponse response)
+			throws FileNotFoundException, IOException, ClassNotFoundException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
@@ -513,7 +512,9 @@ public class GenericUtility {
 	}
 
 	public static String checkEmailValid(String username,
-			HttpServletRequest request,HttpServletResponse  response) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+			HttpServletRequest request, HttpServletResponse response)
+			throws SQLException, ClassNotFoundException, FileNotFoundException,
+			IOException {
 		Connection con = null;
 		ResultSet rs = null;
 		PreparedStatement pstm = null;
@@ -534,19 +535,23 @@ public class GenericUtility {
 		return userEmail;
 
 	}
-	public static void errorForwader(HttpServletRequest request, HttpServletResponse response, Exception e)
-	{
-		RequestDispatcher rd=request.getRequestDispatcher("pages/Error.jsp");
+
+	public static void errorForwader(HttpServletRequest request,
+			HttpServletResponse response, Exception e) {
+		e.printStackTrace();
+		RequestDispatcher rd = request.getRequestDispatcher("pages/Error.jsp");
 		try {
 			rd.forward(request, response);
 		} catch (ServletException | IOException e1) {
 			e1.printStackTrace();
-		} 
+		}
 	}
-	public static void redirectError(HttpServletResponse response,Exception e)
-	{
+
+	public static void redirectError(HttpServletResponse response, Exception e) {
+		e.printStackTrace();
 		try {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					e.getMessage());
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

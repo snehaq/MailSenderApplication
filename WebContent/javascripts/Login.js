@@ -43,7 +43,7 @@ $(document).ready(function(){
 				success: function (result) {
 					var status=JSON.parse(result);
 					if(status=="true"){
-						window.location = '/MailSendingApplication/controller?mode=dashboard';
+						window.location = '/MailSendingApplication/pages/Index.jsp';
 					}
 					else if(status=="false"){
 						$('#authFailed h2').html("");

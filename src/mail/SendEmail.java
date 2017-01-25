@@ -25,18 +25,18 @@ import javax.servlet.http.HttpServletRequest;
 
 public class SendEmail {
 	private final String SMTP_HOST = "smtp.gmail.com";
-	String FROM_ADDRESS="";
-	 String PASSWORD="";
-	
-	
+	String FROM_ADDRESS = "";
+	String PASSWORD = "";
 
 	public void sendMail(String subject, String message,
 			HashMap singleEmployee, String bccRecipients[],
 			HttpServletRequest request, String UPLOAD_DIR_IMG)
-					throws MessagingException {
-		FROM_ADDRESS = ((HashMap<String,String>) request.getAttribute("Properties")).get("setFrom");
-		PASSWORD = ((HashMap<String,String>) request.getAttribute("Properties")).get("setPassword");
-		
+			throws MessagingException {
+		FROM_ADDRESS = ((HashMap<String, String>) request
+				.getAttribute("Properties")).get("setFrom");
+		PASSWORD = ((HashMap<String, String>) request
+				.getAttribute("Properties")).get("setPassword");
+
 		Properties props = new Properties();
 		props.put("mail.smtp.host", SMTP_HOST);
 		props.put("mail.smtp.port", "587");
@@ -87,15 +87,15 @@ public class SendEmail {
 		multipart.addBodyPart(messageBodyPart);
 
 		BodyPart messageBodyPart2 = new MimeBodyPart();
-		File f = new File(request.getServletContext().getRealPath("")
-				+ "/"+UPLOAD_DIR_IMG+"/" + id + ".jpg");
+		File f = new File(request.getServletContext().getRealPath("") + "/"
+				+ UPLOAD_DIR_IMG + "/" + id + ".jpg");
 		DataSource fds = null;
 		if (f.exists() && !f.isDirectory()) {
 			fds = new FileDataSource(request.getServletContext()
-					.getRealPath("") + "/"+UPLOAD_DIR_IMG+"/"+ id + ".jpg");
+					.getRealPath("") + "/" + UPLOAD_DIR_IMG + "/" + id + ".jpg");
 		} else {
 			fds = new FileDataSource(request.getServletContext()
-					.getRealPath("") +"/"+UPLOAD_DIR_IMG+"/0000.jpg");
+					.getRealPath("") + "/" + UPLOAD_DIR_IMG + "/0000.jpg");
 		}
 
 		messageBodyPart2.setDataHandler(new DataHandler(fds));

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@page import="java.util.*"%>
+<%@page import=" javax.servlet.http.HttpSession"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -18,20 +19,27 @@
 	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/smoothness/jquery-ui.css" />
 <script
 	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
 <script src="${pageContext.request.contextPath}/javascripts/Index.js"
 	type="text/javascript"></script>
-
-
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/stylesheets/Index.css">
 <title>Mail Sender</title>
 </head>
 <body>
 	<%
-		ArrayList<HashMap> pastWeekMailLogs = (ArrayList<HashMap>) request.getAttribute("pastWeekMailLogs");
-		ArrayList<String> templateImg = (ArrayList<String>) request.getAttribute("templateImg");
-		ArrayList<String> templatesSelected = (ArrayList<String>) request.getAttribute("templatesSelected");
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+	%>
+	<script>
+	redirectToLoginPage();
+	</script>
+	<%
+		}else{
+	%>
+	<script>
+	callDashBoardInController();
+	</script>
+	<%
 		String message = (String) request.getAttribute("Message");
 	%>
 	<div class="container" id="container">
@@ -40,7 +48,7 @@
 		%>
 		<div class="row">
 			<div class="col-md-12" id="headingDiv">
-				<h4 style="color: #59b7b6;"><%=message%></h1>
+				<h4 style="color: #59b7b6;"><%=message%></h4>
 			</div>
 		</div>
 		<%
@@ -65,11 +73,11 @@
 			<div class="row" id="uploadFileUi" style="background-color: #f7f7f7;">
 				<div class="col-md-2"></div>
 				<div class="col-md-10" style="margin-top: 20px;">
-					<input  type="text"  id="selectFile" placeholder="Choose File"
+					<input type="text" id="selectFile" placeholder="Choose File"
 						disabled="disabled" class="selectFileTBoxes" name="selectFile" />
 					<div class="fileUpload btn btn-primary">
-						<span>Select File</span> <input id="selectFile_replacer" type="file"
-							class="upload" name="fname" />
+						<span>Select File</span> <input id="selectFile_replacer"
+							type="file" class="upload" name="fname" />
 					</div>
 					<!-- <button type="Submit" id="uploadBtn" class="btn btn-default">Upload</button> -->
 					<input type="submit" id="uploadBtn"
@@ -101,11 +109,11 @@
 			<div class="row" id="uploadZipUi" style="background-color: #f7f7f7;">
 				<div class="col-md-2"></div>
 				<div class="col-md-10" style="margin-top: 20px;">
-					<input type="text" id="selectZip" placeholder="Choose File" disabled="disabled"
-						class="selectFileTBoxes" />
+					<input type="text" id="selectZip" placeholder="Choose File"
+						disabled="disabled" class="selectFileTBoxes" />
 					<div class="fileUpload btn btn-primary">
-						<span>Select File</span> <input id="selectZip_replacer" type="file"
-							class="uploadZip" name="fname" />
+						<span>Select File</span> <input id="selectZip_replacer"
+							type="file" class="uploadZip" name="fname" />
 					</div>
 					<!-- <button type="Submit" id="uploadBtn" class="btn btn-default">Upload</button> -->
 					<input type="submit" id="uploadZipBtn"
@@ -220,62 +228,10 @@
 					style="height: 90%; width: 100%" />
 			</div>
 		</div>
-
-		<%
-			if (templateImg.isEmpty()) {
-		%>
 		<form name="setTemplatesForm" id="setTemplatesForm">
 			<div class="row"
 				style="background-color: #f7f7f7; padding-top: 3%; max-height: 300px; overflow-y: scroll; overflow-x: scroll;"
-				id="templateChooserUi">
-
-				<h3 style="color: #d15353; margin-left: 33%">No Templates to
-					Display</h3>
-			</div>
-		</form>
-
-		<%
-			} else {
-		%>
-		<form name="setTemplatesForm" id="setTemplatesForm">
-			<div class="row"
-				style="background-color: #f7f7f7; max-height: 300px; overflow-y: scroll; overflow-x: scroll;"
-				id="templateChooserUi">
-				<%
-					for (int i = 0; i < templateImg.size(); i++) {
-				%>
-				<div class="col-md-2  templateImages"
-					style="margin: 10px; height: 120px; padding-bottom: 5%;">
-					<img src=<%=templateImg.get(i)%> class="templateImgs"
-						id=<%=templateImg.get(i)%> data-container="body"
-						data-toggle="popover" data-placement="top"
-						data-content="click to preview"
-						style="height: 100%; width: 100%; outline: none; border-color: #9ecaed; box-shadow: 0 0 20px #9ecaed; border-radius: 5px;">
-					<%
-						String file = templateImg.get(i).split("/")[1];
-									String finalComparer = file.split("\\.")[0];
-
-									if (templatesSelected.contains(templateImg.get(i).split("/")[1].split("\\.")[0])) {
-					%>
-					<input type="checkbox" name="templateImgs" class="templates"
-						value=<%=templateImg.get(i)%> checked
-						style="margin-left: 40%; width: 20px; height: 20px; margin-bottom: 1%;" />
-					<%
-						} else {
-					%>
-					<input type="checkbox" name="templateImgs" class="templates"
-						value=<%=templateImg.get(i)%>
-						style="margin-left: 40%; margin-bottom: 1%; width: 20px; height: 20px;" />
-					<%
-						}
-					%>
-
-				</div>
-
-				<%
-					}
-				%>
-			</div>
+				id="templateChooserUi"></div>
 			<div id="checkBoxValidationMsg"></div>
 			<div class="row"
 				style="background-color: #f7f7f7; padding-bottom: 20px; padding-top: 20px; padding-left: 150px;">
@@ -293,14 +249,7 @@
 			</div>
 		</form>
 
-		<%
-			}
-		%>
 
-
-		<%
-			}
-		%>
 		<div class="row" id="mailLogsLabel"
 			style="background-color: #f7f7f7; margin-top: 20px;">
 			<div class="col-md-3"></div>
@@ -324,48 +273,12 @@
 			</div>
 		</div>
 		<div class="row"
-			style="background-color: #f7f7f7; padding-bottom: 20px; padding-top: 20px;">
-			<%
-				if (pastWeekMailLogs.size() == 0) {
-			%>
-			<div class="col-md-12" id="mailLogs">
-				<h2>No Mail Logs Avalable</h2>
-			</div>
-			<%
-				} else {
-			%>
-
-			<div class="col-md-12" id="mailLogs">
-				<table class="table table-hover">
-					<thead>
-						<tr>
-							<th>id</th>
-							<th>Name</th>
-							<th>Email</th>
-							<th>Date of Delivery</th>
-						</tr>
-					</thead>
-					<tbody>
-						<%
-							for (int i = 0; i < pastWeekMailLogs.size(); i++) {
-									HashMap hm = new HashMap();
-									hm = (HashMap) pastWeekMailLogs.get(i);
-						%>
-						<tr>
-							<td><%=hm.get("id")%></td>
-							<td><%=hm.get("name")%></td>
-							<td><%=hm.get("email")%></td>
-							<td><%=hm.get("dateofdelivery")%></td>
-						</tr>
-						<%
-							}
-							}
-						%>
-					</tbody>
-				</table>
-			</div>
-		</div>
-
+			style="background-color: #f7f7f7; padding-bottom: 20px; padding-top: 20px;"
+			id="mailLogsRow"></div>
+		<%
+			}
+		%>
 	</div>
+	<%} %>
 </body>
 </html>

@@ -26,7 +26,7 @@ public class Main {
 	public static void getEmpWithBday(List EmpWithBirthDaysList,
 			List AllEmails, HttpServletRequest request,
 			HttpServletResponse response) throws BiffException, IOException,
-	ClassNotFoundException, SQLException {
+			ClassNotFoundException, SQLException {
 		List columnNames = new ArrayList();
 
 		columnNames = GenericUtility.getColumnNames(columnNames, request,
@@ -108,12 +108,12 @@ public class Main {
 		String folderPath = absolutePath + "/";
 
 		if (templates.length == 1) {
-			in = new BufferedReader(new FileReader(folderPath
-					+ templates[0] + ".html"));
+			in = new BufferedReader(new FileReader(folderPath + templates[0]
+					+ ".html"));
 		} else {
 			in = new BufferedReader(new FileReader(folderPath
 					+ templates[getRandomInteger(templates.length, 1)]
-							+ ".html"));
+					+ ".html"));
 		}
 		String str = null;
 		while ((str = in.readLine()) != null) {
@@ -126,12 +126,14 @@ public class Main {
 	}
 
 	public static String CreateTemplate(HashMap employeeData,
-			HttpServletRequest request) throws FileNotFoundException, IOException  {
+			HttpServletRequest request) throws FileNotFoundException,
+			IOException {
 
 		ReadPropertiesFile.readConfig(request);
 		String emailBody = "";
-		
-		String[] templates = ((HashMap<String,String>) request.getAttribute("Properties")).get("templates").split(",");
+
+		String[] templates = ((HashMap<String, String>) request
+				.getAttribute("Properties")).get("templates").split(",");
 
 		String templateParsedToString = readAndParseRandomTemplateFile(
 				templates, request);
@@ -146,8 +148,9 @@ public class Main {
 	}
 
 	public static void dataForSendMail(HttpServletRequest request,
-			String UPLOAD_DIR_IMG, HttpServletResponse response) throws FileNotFoundException, IOException, BiffException, ClassNotFoundException, SQLException, MessagingException
-					 {
+			String UPLOAD_DIR_IMG, HttpServletResponse response)
+			throws FileNotFoundException, IOException, BiffException,
+			ClassNotFoundException, SQLException, MessagingException {
 		ArrayList EmpWithBirthDaysList = new ArrayList();
 		ArrayList TemplateStrings = new ArrayList();
 		ArrayList<String> AllEmails = new ArrayList<String>();
@@ -158,7 +161,6 @@ public class Main {
 		getEmpWithBday(EmpWithBirthDaysList, AllEmails, request, response);
 
 		for (int i = 0; i < EmpWithBirthDaysList.size(); i++) {
-			System.out.println("in for loop");
 			HashMap singleEmployee = new HashMap();
 			singleEmployee = (HashMap) EmpWithBirthDaysList.get(i);
 			String emailTo = (String) singleEmployee.get("email");
@@ -167,8 +169,10 @@ public class Main {
 			bcc = AllEmails.toArray(bcc);
 			id = (String) singleEmployee.get("id");
 			System.out.println("Creating template for email!");
-			System.out.println(((HashMap<String,String>) request.getAttribute("Properties")).get("setSubject"));
-			new SendEmail().sendMail(((HashMap<String,String>) request.getAttribute("Properties")).get("setSubject"), emailBody,
+			System.out.println(((HashMap<String, String>) request
+					.getAttribute("Properties")).get("setSubject"));
+			new SendEmail().sendMail(((HashMap<String, String>) request
+					.getAttribute("Properties")).get("setSubject"), emailBody,
 					singleEmployee, bcc, request, UPLOAD_DIR_IMG);
 			int status = GenericUtility.insertMailLogs(singleEmployee, request,
 					response);

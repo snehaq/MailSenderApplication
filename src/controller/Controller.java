@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +31,6 @@ import utility.CronJob;
 import utility.GenericUtility;
 import utility.PasswordRecoveryMail;
 import utility.ReadPropertiesFile;
-import utility.RedirectToError;
 import utility.UnzipImages;
 
 import com.google.gson.Gson;
@@ -47,12 +45,11 @@ public class Controller extends HttpServlet {
 	public Controller() {
 		super();
 	}
-	
+
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String mode = request.getParameter("mode");
-
 		HttpSession session1 = request.getSession(false);
 		if (session1 != null) {
 			if (("updateCronJobTimeToRun").equals(mode)) {
@@ -60,19 +57,19 @@ public class Controller extends HttpServlet {
 					CronJob.unscheduleCronJob(request, response);
 				} catch (Exception e) {
 					request.setAttribute("errorMessage", e.getMessage());
-					GenericUtility.errorForwader(request,response,e);
+					GenericUtility.errorForwader(request, response, e);
 				}
 			} else if (("dashboard").equals(mode)) {
 				redirectToMainPageWithData(request, response);
 
 			} else {
 				response.getWriter().append("CronJob Scheduled: ")
-				.append(request.getContextPath());
+						.append(request.getContextPath());
 				try {
 					CronJob.ScheduleCronJob(request, response);
 				} catch (Exception e) {
 					request.setAttribute("errorMessage", e.getMessage());
-					GenericUtility.errorForwader(request,response,e);
+					GenericUtility.errorForwader(request, response, e);
 				}
 			}
 		} else {
@@ -82,36 +79,36 @@ public class Controller extends HttpServlet {
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 					request.setAttribute("errorMessage", e.getMessage());
-					GenericUtility.errorForwader(request,response,e);
-				} 
+					GenericUtility.errorForwader(request, response, e);
+				}
 				if (((HashMap<String, String>) request
 						.getAttribute("Properties")).get("setStatus").equals(
-								"enable")) {
+						"enable")) {
 					try {
 						Main.dataForSendMail(request, UPLOAD_DIR_IMG, response);
 					} catch (Exception e) {
 						e.printStackTrace();
 						request.setAttribute("errorMessage", e.getMessage());
-						GenericUtility.errorForwader(request,response,e);
+						GenericUtility.errorForwader(request, response, e);
 					}
 				} else if (((HashMap<String, String>) request
 						.getAttribute("Properties")).get("setStatus").equals(
-								"disable")) {
+						"disable")) {
 					System.out.println("Mail functionality disabled");
 				}
 			} else if (("checkExpiry").equals(mode)) {
 				checkExpiry(request, response);
-			} else
+			} else {
 				response.sendRedirect("./pages/Login.jsp");
+			}
 		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response)  {
+			HttpServletResponse response) {
 		String mode = request.getParameter("mode");
 		HttpSession session = request.getSession(false);
-
 		if (session == null) {
 			if (("loginAuthentication").equals(mode)) {
 				loginAuthentication(request, response);
@@ -144,6 +141,7 @@ public class Controller extends HttpServlet {
 			}
 		}
 	}
+
 	private void checkExpiry(HttpServletRequest request,
 			HttpServletResponse response) {
 		String token = request.getParameter("token");
@@ -166,39 +164,29 @@ public class Controller extends HttpServlet {
 				msg = "The link has expired!";
 				request.setAttribute("msg", msg);
 			}
-			
-				RequestDispatcher rd = request
-						.getRequestDispatcher("pages/ChangePassword.jsp");
-				rd.forward(request, response);
-			 
-		} catch (SQLException | ClassNotFoundException | IOException | ServletException e1) {
-			e1.printStackTrace();
-			msg=e1.getMessage();
-			request.setAttribute("msg", msg);
+
 			RequestDispatcher rd = request
 					.getRequestDispatcher("pages/ChangePassword.jsp");
-			try {
-				rd.forward(request, response);
-			} catch (ServletException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} 
+			rd.forward(request, response);
+
+		} catch (SQLException | ClassNotFoundException | IOException
+				| ServletException e1) {
+			msg = e1.getMessage();
+			request.setAttribute("errorMessage", msg);
+			GenericUtility.errorForwader(request, response, e1);
+
+		}
 	}
 
 	private void changePassword(HttpServletRequest request,
-			HttpServletResponse response)  {
+			HttpServletResponse response) {
 		String conf_pass = request.getParameter("conf_pass");
 		try {
 			int status = GenericUtility.changePassword(conf_pass, request,
 					response);
 			response.getWriter().write(new Gson().toJson(status));
 		} catch (IOException e) {
-			try {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-			} catch (IOException e1) {
-				e.printStackTrace();
-			}
+			GenericUtility.redirectError(response, e);
 		}
 	}
 
@@ -216,7 +204,8 @@ public class Controller extends HttpServlet {
 
 		} else {
 			try {
-				userEmail = GenericUtility.checkEmailValid(username, request,response);
+				userEmail = GenericUtility.checkEmailValid(username, request,
+						response);
 
 				if (userEmail.equals(mailTo)) {
 
@@ -228,17 +217,12 @@ public class Controller extends HttpServlet {
 					mailer.sendHtmlEmail(request, response);
 					status = "true";
 
-
 				} else {
 					status = "emailInvalid";
 				}
-			}
-			catch (SQLException | ClassNotFoundException | IOException | MessagingException e1) {
-				try {
-					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e1.getMessage());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			} catch (SQLException | ClassNotFoundException | IOException
+					| MessagingException e1) {
+				GenericUtility.redirectError(response, e1);
 			}
 		}
 		try {
@@ -269,10 +253,11 @@ public class Controller extends HttpServlet {
 				status = "false";
 				response.getWriter().write(new Gson().toJson(status));
 			}
-		} catch (ClassNotFoundException | NoSuchAlgorithmException | SQLException | IOException e) {
-			e.printStackTrace();
+			GenericUtility.connectionClose(null, user, null);
+		} catch (ClassNotFoundException | NoSuchAlgorithmException
+				| SQLException | IOException e) {
 			GenericUtility.redirectError(response, e);
-		} 
+		}
 	}
 
 	public void userLogout(HttpServletRequest request,
@@ -291,20 +276,19 @@ public class Controller extends HttpServlet {
 
 	private void mailLogSelectChange(HttpServletRequest request,
 			HttpServletResponse response) {
-		
+
 		String selectedOption = request.getParameter("selectedOption");
 		List<HashMap> mailLogs = new ArrayList<HashMap>();
 		try {
-		if (selectedOption.equals("Last Week")) {
+			if (selectedOption.equals("Last Week")) {
 				mailLogs = GenericUtility
 						.getPastWeekMailLogs(request, response);
-			
-		} else {
+
+			} else {
 				mailLogs = GenericUtility.getAllMailLogs(request, response);
-		}
+			}
 			response.getWriter().write(new Gson().toJson(mailLogs));
 		} catch (IOException | ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
 			GenericUtility.redirectError(response, e);
 		}
 	}
@@ -313,55 +297,57 @@ public class Controller extends HttpServlet {
 			HttpServletResponse response) {
 		try {
 			ReadPropertiesFile.readConfig(request);
-		
 
-		String[] selected_value = request.getParameterValues("templateImgs");
+			String[] selected_value = request
+					.getParameterValues("templateImgs");
 
-		String relativeWebPath = "/templates";
-		String absoluteDiskPath = getServletContext().getRealPath(
-				relativeWebPath);
-		File templateHtmlFolder = new File(absoluteDiskPath);
-		File[] listOfTemplateFiles = templateHtmlFolder.listFiles();
-		List templatesList = new ArrayList();
+			String relativeWebPath = "/templates";
+			String absoluteDiskPath = getServletContext().getRealPath(
+					relativeWebPath);
+			File templateHtmlFolder = new File(absoluteDiskPath);
+			File[] listOfTemplateFiles = templateHtmlFolder.listFiles();
+
+			List templatesList = new ArrayList();
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 
-		String[] selected_value_Split = new String[selected_value.length];
-		for (int i = 0; i < selected_value.length; i++) {
-			selected_value_Split[i] = selected_value[i].split("/")[1];
-		}
-		String[] final_Templates = new String[selected_value_Split.length];
-		for (int i = 0; i < selected_value_Split.length; i++) {
-			final_Templates[i] = selected_value_Split[i].split("\\.")[0];
-		}
-
-		ArrayList templatesSelected = new ArrayList();
-		String templateSelectedString = "";
-		ArrayList templatesDiscarded = new ArrayList();
-
-		for (int i = 0; i < final_Templates.length; i++) {
-			if (templatesList.contains(final_Templates[i])) {
-				templateSelectedString += final_Templates[i] + ",";
-				templatesSelected.add(final_Templates[i]);
-
-			} else {
-				System.out.println("template name " + final_Templates[i]
-						+ " invalid");
-				System.out.println("dicarding " + final_Templates[i]);
-				templatesDiscarded.add(final_Templates[i]);
+			String[] selected_value_Split = new String[selected_value.length];
+			for (int i = 0; i < selected_value.length; i++) {
+				selected_value_Split[i] = selected_value[i].split("/")[1];
 			}
-		}
-		if (templateSelectedString == "") {
+			String[] final_Templates = new String[selected_value_Split.length];
+			for (int i = 0; i < selected_value_Split.length; i++) {
+				final_Templates[i] = selected_value_Split[i].split("\\.")[0];
+			}
 
-			templateSelectedString = ((HashMap<String, String>) request
-					.getAttribute("Properties")).get("templates");
+			ArrayList templatesSelected = new ArrayList();
+			String templateSelectedString = "";
+			ArrayList templatesDiscarded = new ArrayList();
 
-		}
-		String path = request.getServletContext().getRealPath(File.separator)
-				+ "MailSendingApplication.properties";
-		FileInputStream in = null;
+			for (int i = 0; i < final_Templates.length; i++) {
+				if (templatesList.contains(final_Templates[i])) {
+					templateSelectedString += final_Templates[i] + ",";
+					templatesSelected.add(final_Templates[i]);
+
+				} else {
+					System.out.println("template name " + final_Templates[i]
+							+ " invalid");
+					System.out.println("dicarding " + final_Templates[i]);
+					templatesDiscarded.add(final_Templates[i]);
+				}
+			}
+			if (templateSelectedString == "") {
+
+				templateSelectedString = ((HashMap<String, String>) request
+						.getAttribute("Properties")).get("templates");
+
+			}
+			String path = request.getServletContext().getRealPath(
+					File.separator)
+					+ "MailSendingApplication.properties";
+			FileInputStream in = null;
 			in = new FileInputStream(path);
 			Properties props = new Properties();
 			props.load(in);
@@ -372,19 +358,18 @@ public class Controller extends HttpServlet {
 			props.setProperty("templates", templateSelectedString);
 			props.store(out, null);
 			out.close();
-		ArrayList jsonData = new ArrayList();
-		jsonData.add(templatesSelected);
-		jsonData.add(templatesDiscarded);
+			ArrayList jsonData = new ArrayList();
+			jsonData.add(templatesSelected);
+			jsonData.add(templatesDiscarded);
 
-		response.getWriter().write(new Gson().toJson(jsonData));
+			response.getWriter().write(new Gson().toJson(jsonData));
 		} catch (IOException e) {
-			e.printStackTrace();
 			GenericUtility.redirectError(response, e);
 		}
 	}
 
 	private void redirectToMainPageWithData(HttpServletRequest request,
-			HttpServletResponse response) throws FileNotFoundException {
+			HttpServletResponse response) {
 		List<String> imagePath = null;
 		String relativeWebPath = "/templateImgs";
 		String absoluteDiskPath = getServletContext().getRealPath(
@@ -396,12 +381,13 @@ public class Controller extends HttpServlet {
 		File templateHtmlFolder = new File(absoluteDiskPath1);
 
 		File[] listOfFiles = templateImageFolder.listFiles();
+
 		File[] listOfTemplateFiles = templateHtmlFolder.listFiles();
 		List templatesList = new ArrayList();
 		try {
 			for (int i = 0; i < listOfTemplateFiles.length; i++) {
 				templatesList
-				.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
+						.add(listOfTemplateFiles[i].getName().split("\\.")[0]);
 			}
 			imagePath = new ArrayList<String>();
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -422,28 +408,27 @@ public class Controller extends HttpServlet {
 				templatesAlreadySet.add(templatesFromPropertiesFile[i]);
 			}
 			List<HashMap> pastWeekMailLogs = new ArrayList<HashMap>();
-			
-				pastWeekMailLogs = GenericUtility.getPastWeekMailLogs(request,
-						response);
-			request.setAttribute("pastWeekMailLogs", pastWeekMailLogs);
-			request.setAttribute("templateImg", imagePath);
-			request.setAttribute("templatesSelected", templatesAlreadySet);
-			RequestDispatcher rd = request
-					.getRequestDispatcher("pages/Index.jsp");
-			rd.forward(request, response);
-		} catch (NullPointerException | ServletException | IOException | ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-			request.setAttribute("errorMessage",e.getMessage());
-			RequestDispatcher rd=request.getRequestDispatcher("pages/Error.jsp");
-			try {
-				rd.forward(request, response);
-			} catch (ServletException | IOException e1) {
-				e1.printStackTrace();
-			} 
-		} 
+
+			pastWeekMailLogs = GenericUtility.getPastWeekMailLogs(request,
+					response);
+			String pastWeekMailLogsJson = new Gson().toJson(pastWeekMailLogs);
+			String templateImgJson = new Gson().toJson(imagePath);
+
+			String templatesSelectedJson = new Gson()
+					.toJson(templatesAlreadySet);
+
+			String allJson = "[" + pastWeekMailLogsJson + "," + templateImgJson
+					+ "," + templatesSelectedJson + "]";
+			response.getWriter().print(allJson);
+		} catch (NullPointerException | IOException | ClassNotFoundException
+				| SQLException e) {
+			GenericUtility.redirectError(response, e);
+
+		}
 	}
+
 	private void zipUpload(HttpServletRequest request,
-			HttpServletResponse response)  {
+			HttpServletResponse response) {
 		String applicationPath = request.getServletContext().getRealPath("");
 		String uploadFilePath = applicationPath + File.separator
 				+ UPLOAD_DIR_IMG;
@@ -465,7 +450,7 @@ public class Controller extends HttpServlet {
 					if (fileName.split("\\.")[1].equals("zip")) {
 						part.write(uploadFilePath + File.separator + fileName);
 						UnzipImages
-						.unzipFile(request, fileName, uploadFilePath);
+								.unzipFile(request, fileName, uploadFilePath);
 						File file = new File(uploadFilePath + File.separator
 								+ fileName);
 						if (file.delete()) {
@@ -490,15 +475,13 @@ public class Controller extends HttpServlet {
 
 			response.getWriter().write(new Gson().toJson(msg));
 		} catch (IllegalStateException | IOException | ServletException e) {
-			e.printStackTrace();
 			GenericUtility.redirectError(response, e);
 		}
-
 
 	}
 
 	public void uploadFile(HttpServletRequest request,
-			HttpServletResponse response)  {
+			HttpServletResponse response) {
 		String applicationPath = request.getServletContext().getRealPath("");
 		String uploadFilePath = applicationPath + File.separator + UPLOAD_DIR;
 		boolean status = false;
@@ -525,8 +508,8 @@ public class Controller extends HttpServlet {
 				msg = "error";
 			}
 			response.getWriter().write(new Gson().toJson(msg));
-		} catch (IOException | IllegalStateException | ServletException e) {
-			e.printStackTrace();
+		} catch (IOException | IllegalStateException | ServletException
+				| ClassNotFoundException | SQLException e) {
 			GenericUtility.redirectError(response, e);
 		}
 	}
@@ -542,7 +525,6 @@ public class Controller extends HttpServlet {
 						+ "MailSendingApplication.properties";
 				FileInputStream in = null;
 
-
 				in = new FileInputStream(path);
 				Properties props = new Properties();
 				props.load(in);
@@ -557,7 +539,6 @@ public class Controller extends HttpServlet {
 			}
 			response.getWriter().write(new Gson().toJson(status));
 		} catch (IOException e) {
-			e.printStackTrace();
 			GenericUtility.redirectError(response, e);
 		}
 	}
@@ -567,7 +548,7 @@ public class Controller extends HttpServlet {
 		String hours = request.getParameter("hours");
 		String minutes = request.getParameter("minutes");
 		String am_pm = request.getParameter("am/pm");
-		try{
+		try {
 			boolean validationCheck = GenericUtility.validateTimeToRun(hours,
 					minutes, am_pm);
 			if (!validationCheck) {
@@ -591,15 +572,10 @@ public class Controller extends HttpServlet {
 				out.close();
 				GenericUtility.callupdateCronJobTime(request, response);
 				response.getWriter().write(new Gson().toJson(timeToRun));
-			} 
-		}catch (IOException e) {
-			e.printStackTrace();
+			}
+		} catch (IOException e) {
 			GenericUtility.redirectError(response, e);
 		}
 	}
-	
+
 }
-
-
-
-
