@@ -1,3 +1,6 @@
+function redirectToMainPage(){
+	window.location.href="./Index.jsp";
+}
 $(document).ready(function(){
 	$('#forgotPassword').on('click',function(){
 		if($("#username").val()==""){

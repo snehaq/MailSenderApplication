@@ -27,6 +27,14 @@
 <title>Login</title>
 </head>
 <body>
+<%
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+	%>
+	<script type="text/javascript">
+	redirectToMainPage();
+	</script>
+<%}else{ %>
 	<div id="login">
 		<div class="container">
 			<div class="row" id="loginUIRow">
@@ -90,9 +98,6 @@
 			</div>
 		</div>
 	</div>
-
-
-
-
+<%} %>
 </body>
 </html>
