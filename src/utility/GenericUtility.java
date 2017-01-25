@@ -99,7 +99,8 @@ public class GenericUtility {
 			}
 		} catch (SQLException e) {
 			String errMsg = "Something went wrng..!!!";
-			RedirectToError.errorPage(request, response, errMsg);
+			errorForwader(request, response, e);
+
 		}
 
 		connectionClose(con, rs, ps);

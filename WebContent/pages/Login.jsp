@@ -21,7 +21,6 @@
 	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" media="all"
 	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/smoothness/jquery-ui.css" />
-
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/stylesheets/Login.css">
 <title>Login</title>
