@@ -84,8 +84,7 @@ It will also update the mail logs for the same.
    Upon confirming the password will be successfully changed and user can login
     using the newly set password.
 ===========================================================================================
-   
-test passed
+   windows cre manager
 
 
 	
