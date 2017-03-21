@@ -85,7 +85,7 @@ It will also update the mail logs for the same.
     using the newly set password.
 ===========================================================================================
    
-testtttting
+test passed
 
 
 	
